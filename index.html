@@ -221,6 +221,11 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
   border-radius: var(--radius-sm); margin-bottom: 0.9rem;
 }
 
+
+/* ── Stress Analysis Card ── */
+.stress-metrics .g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+@media(max-width:600px){ .stress-metrics .g3{grid-template-columns:1fr 1fr;} }
+
 /* ── Calc pane hidden ── */
 .calc-pane { display: none; }
 .calc-pane.active { display: block; }
@@ -280,6 +285,16 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
       <button class="gear-btn" onclick="switchGear('harmonic',this)">Harmonic Drive</button>
     </div>
   </div>
+
+  <div>
+    <div class="gear-group-title">6 · Mechanisms &amp; Special</div>
+    <div class="gear-btn-row">
+      <button class="gear-btn" onclick="switchGear('geneva',this)">Geneva Mechanism</button>
+      <button class="gear-btn" onclick="switchGear('cam',this)">Cam Indexer</button>
+      <button class="gear-btn" onclick="switchGear('ratchet',this)">Ratchet &amp; Pawl</button>
+    </div>
+  </div>
+
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -340,7 +355,24 @@ h1 { font-size: 22px; font-weight: 500; margin-bottom: 4px; }
     </div>
     <div class="card"><div class="sec-title">Key Dimensions</div><div id="sp-r-dims"></div></div>
     <div class="card"><div class="sec-title">Checks</div><div id="sp-r-checks"></div></div>
+  
+  <div class="card" id="sp-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="sp_kw" type="number" value="5" step="0.1" oninput="calcSpurStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="sp_rpm" type="number" value="1000" oninput="calcSpurStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="sp_sf" type="number" value="2" step="0.1" oninput="calcSpurStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="sp_b" type="number" value="20" oninput="calcSpurStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="sp_mat" onchange="fillMat('sp')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="sp_sb" type="number" value="280" oninput="calcSpurStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="sp_sc" type="number" value="900" oninput="calcSpurStress()"></div></div>
+    </div>
+    <div id="sp-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="sp-stress-checks" style="margin-top:8px"></div>
+    <div id="sp-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
 
   <div id="spur-geometry" style="display:none">
     <div class="card">
@@ -384,11 +416,10 @@ Typical: ε = 1.4–1.8 for standard spur gears</div>
   </div>
 
   <div id="spur-diagram" style="display:none">
-    <div class="card"><div class="vis-wrap">
-      <svg id="spur-svg" width="440" height="260" viewBox="-220 -130 440 260"></svg>
-      <div style="font-size:12px;color:var(--txt3);margin-top:8px">Spur gear pair — pitch circles and tooth outline</div>
-    </div></div>
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div class="vis-wrap"><svg id="spur-svg" width="100%" viewBox="-120 -120 240 160" style="max-height:260px"></svg></div>
   </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -435,7 +466,24 @@ Typical: ε = 1.4–1.8 for standard spur gears</div>
       <div class="mcard"><div class="mc-label">Overlap Ratio εβ</div><div class="mc-val" id="he-r-ovlp">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Dimensions</div><div id="he-r-dims"></div></div>
+  
+  <div class="card" id="he-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="he_kw" type="number" value="5" step="0.1" oninput="calcHelicalStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="he_rpm" type="number" value="1000" oninput="calcHelicalStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="he_sf" type="number" value="2" step="0.1" oninput="calcHelicalStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="he_b" type="number" value="20" oninput="calcHelicalStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="he_mat" onchange="fillMat('he')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="he_sb" type="number" value="280" oninput="calcHelicalStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="he_sc" type="number" value="900" oninput="calcHelicalStress()"></div></div>
+    </div>
+    <div id="he-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="he-stress-checks" style="margin-top:8px"></div>
+    <div id="he-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="helical-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear 1</div><div id="he-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Gear 2</div><div id="he-geo2"></div></div>
@@ -467,7 +515,14 @@ Overlap Ratio εβ  = B × tan(ψ) / (π × mₙ)</div>
     </div>
   </div>
 </div>
-  <div id="helical-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="helical-svg" width="500" height="280" viewBox="-250 -140 500 280"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Helical gear pair — helix tooth profile and pitch circles</div></div></div></div>
+  <div id="helical-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════
      1.3 HERRINGBONE
@@ -512,7 +567,24 @@ Overlap Ratio εβ  = B × tan(ψ) / (π × mₙ)</div>
       <div class="mcard"><div class="mc-label">Tangential Force</div><div class="mc-val" id="hb-r-wt">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="hb-r-dims"></div></div>
+  
+  <div class="card" id="hb-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="hb_kw" type="number" value="5" step="0.1" oninput="calcHerringboneStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="hb_rpm" type="number" value="1000" oninput="calcHerringboneStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="hb_sf" type="number" value="2" step="0.1" oninput="calcHerringboneStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="hb_b" type="number" value="20" oninput="calcHerringboneStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="hb_mat" onchange="fillMat('hb')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="hb_sb" type="number" value="280" oninput="calcHerringboneStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="hb_sc" type="number" value="900" oninput="calcHerringboneStress()"></div></div>
+    </div>
+    <div id="hb-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="hb-stress-checks" style="margin-top:8px"></div>
+    <div id="hb-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="herringbone-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear 1</div><div id="hb-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Gear 2</div><div id="hb-geo2"></div></div>
@@ -540,7 +612,14 @@ Total Tangential Load = 2 × Wt per half</div>
     </div>
   </div>
 </div>
-  <div id="herringbone-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="herringbone-svg" width="500" height="300" viewBox="-250 -150 500 300"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Double helical (herringbone) gear pair — V-shaped tooth pattern</div></div></div></div>
+  <div id="herringbone-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
 
 <!-- ══════════════════════════════════════════════════════════════
      1.4 INTERNAL GEAR
@@ -586,7 +665,24 @@ Total Tangential Load = 2 × Wt per half</div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="ig-r-dims"></div></div>
     <div class="card"><div class="sec-title">Checks</div><div id="ig-r-checks"></div></div>
+  
+  <div class="card" id="ig-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="ig_kw" type="number" value="5" step="0.1" oninput="calcInternalStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="ig_rpm" type="number" value="1000" oninput="calcInternalStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="ig_sf" type="number" value="2" step="0.1" oninput="calcInternalStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="ig_b" type="number" value="20" oninput="calcInternalStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="ig_mat" onchange="fillMat('ig')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="ig_sb" type="number" value="280" oninput="calcInternalStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="ig_sc" type="number" value="900" oninput="calcInternalStress()"></div></div>
+    </div>
+    <div id="ig-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="ig-stress-checks" style="margin-top:8px"></div>
+    <div id="ig-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="internal-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="ig-geo-pin"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Ring Gear (Internal)</div><div id="ig-geo-ring"></div></div>
@@ -615,7 +711,14 @@ Min teeth difference:
       <div class="fnote">Internal gears have smaller centre distance than equivalent external pairs — saving space. Centre distance uses subtraction because ring is larger.</div>
     </div>
   </div>
-  <div id="internal-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="internal-svg" width="380" height="380" viewBox="-190 -190 380 380"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Internal (annular) gear — pinion inside ring gear</div></div></div></div>
+  <div id="internal-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -669,7 +772,24 @@ Min teeth difference:
     </div>
     <div class="card"><div class="sec-title">Assembly Checks</div><div id="pl-r-checks"></div></div>
     <div class="card"><div class="sec-title">Dimensions</div><div id="pl-r-dims"></div></div>
+  
+  <div class="card" id="pl-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="pl_kw" type="number" value="5" step="0.1" oninput="calcPlanetaryStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="pl_rpm" type="number" value="1000" oninput="calcPlanetaryStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="pl_sf" type="number" value="2" step="0.1" oninput="calcPlanetaryStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="pl_b" type="number" value="20" oninput="calcPlanetaryStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="pl_mat" onchange="fillMat('pl')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="pl_sb" type="number" value="280" oninput="calcPlanetaryStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="pl_sc" type="number" value="900" oninput="calcPlanetaryStress()"></div></div>
+    </div>
+    <div id="pl-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="pl-stress-checks" style="margin-top:8px"></div>
+    <div id="pl-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="planetary-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Sun Gear</div><div id="pl-geo-sun"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--green)"></div>Planet Gear</div><div id="pl-geo-planet"></div></div>
@@ -677,15 +797,13 @@ Min teeth difference:
     <div class="card"><div class="sec-title">Common Parameters</div><div id="pl-geo-notes"></div></div>
   </div>
   <div id="planetary-diagram" style="display:none">
-    <div class="card"><div class="vis-wrap">
-      <svg id="pl-svg" width="340" height="340" viewBox="-170 -170 340 340"></svg>
-      <div style="display:flex;justify-content:center;gap:18px;font-size:12px;color:var(--txt2);margin-top:10px">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#EF9F27;display:inline-block"></span>Sun</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:50%;background:#1D9E75;display:inline-block"></span>Planet (<span id="pl-leg-np">3</span>)</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;border:2px solid #378ADD;display:inline-block"></span>Ring</span>
-      </div>
-    </div></div>
-  </div>
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   <div id="planetary-formulas" style="display:none">
     <div class="card"><div class="sec-title">Planetary Gear Formulas</div>
       <div class="fbox">Mesh Condition   Zr = Zs + 2 × Zp
@@ -759,7 +877,24 @@ Configurations (change which member is fixed):
       <div class="mcard"><div class="mc-label">Cone Distance R</div><div class="mc-val" id="sb-r-R">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="sb-r-dims"></div></div>
+  
+  <div class="card" id="sbv-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="sbv_kw" type="number" value="5" step="0.1" oninput="calcStraightBevelStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="sbv_rpm" type="number" value="1000" oninput="calcStraightBevelStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="sbv_sf" type="number" value="2" step="0.1" oninput="calcStraightBevelStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="sbv_b" type="number" value="20" oninput="calcStraightBevelStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="sbv_mat" onchange="fillMat('sbv')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="sbv_sb" type="number" value="280" oninput="calcStraightBevelStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="sbv_sc" type="number" value="900" oninput="calcStraightBevelStress()"></div></div>
+    </div>
+    <div id="sbv-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="sbv-stress-checks" style="margin-top:8px"></div>
+    <div id="sbv-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="straightbevel-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion (Gear 1)</div><div id="sb-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear 2</div><div id="sb-geo2"></div></div>
@@ -788,7 +923,14 @@ Outer Dia        dae = m × (Z + 2cos(γ))
 Inner Dia (root) dfe = m × (Z − 2.5cos(γ))</div>
       <div class="fnote">Pitch cone angles must sum to shaft angle Σ. Back cone radius Rv is used to design equivalent virtual spur gear for tooth proportioning.</div>
     </div>
-  <div id="straightbevel-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="straightbevel-svg" width="420" height="320" viewBox="-210 -160 420 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Straight bevel gear pair — 90° shaft angle, pitch cone view</div></div></div></div>
+  <div id="straightbevel-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -836,7 +978,24 @@ Inner Dia (root) dfe = m × (Z − 2.5cos(γ))</div>
       <div class="mcard"><div class="mc-label">Cone Distance R</div><div class="mc-val" id="spb-r-R">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="spb-r-dims"></div></div>
+  
+  <div class="card" id="spb-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="spb_kw" type="number" value="5" step="0.1" oninput="calcSpiralBevelStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="spb_rpm" type="number" value="1000" oninput="calcSpiralBevelStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="spb_sf" type="number" value="2" step="0.1" oninput="calcSpiralBevelStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="spb_b" type="number" value="20" oninput="calcSpiralBevelStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="spb_mat" onchange="fillMat('spb')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="spb_sb" type="number" value="280" oninput="calcSpiralBevelStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="spb_sc" type="number" value="900" oninput="calcSpiralBevelStress()"></div></div>
+    </div>
+    <div id="spb-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="spb-stress-checks" style="margin-top:8px"></div>
+    <div id="spb-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="spiralbevel-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="spb-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear</div><div id="spb-geo2"></div></div>
@@ -863,7 +1022,14 @@ Radial Force:
 Overlap Ratio: εβ = b × sin(ψₘ) / (π × m)</div>
       <div class="fnote">Spiral angle ψₘ = 35° is standard. Left/right hand must be opposite for mating pair. Axial thrust direction reverses with rotation reversal.</div>
     </div>
-  <div id="spiralbevel-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="spiralbevel-svg" width="420" height="320" viewBox="-210 -160 420 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Spiral bevel gear — curved teeth for gradual engagement</div></div></div></div>
+  <div id="spiralbevel-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -908,7 +1074,24 @@ Overlap Ratio: εβ = b × sin(ψₘ) / (π × m)</div>
       <div class="mcard"><div class="mc-label">Cone Distance R</div><div class="mc-val" id="mi-r-R">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="mi-r-dims"></div></div>
+  
+  <div class="card" id="mi-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="mi_kw" type="number" value="5" step="0.1" oninput="calcMiterStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="mi_rpm" type="number" value="1000" oninput="calcMiterStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="mi_sf" type="number" value="2" step="0.1" oninput="calcMiterStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="mi_b" type="number" value="20" oninput="calcMiterStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="mi_mat" onchange="fillMat('mi')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="mi_sb" type="number" value="280" oninput="calcMiterStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="mi_sc" type="number" value="900" oninput="calcMiterStress()"></div></div>
+    </div>
+    <div id="mi-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="mi-stress-checks" style="margin-top:8px"></div>
+    <div id="mi-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="miter-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Both Gears (identical)</div><div id="mi-geo"></div></div>
     <div class="card"><div class="sec-title">Common</div><div id="mi-geo-notes"></div></div>
@@ -931,7 +1114,14 @@ Outer Tip Dia   dae = m × (Z + 2 × cos(45°)) = m(Z + √2)
 Root Dia        dfe = m × (Z − 2.5 × cos(45°))</div>
       <div class="fnote">Miter gears are bevel gears with 1:1 ratio. Because pitch cone angle is always 45°, both gears are interchangeable — only one part number needed.</div>
     </div>
-  <div id="miter-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="miter-svg" width="360" height="320" viewBox="-180 -160 360 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Miter gear pair — 1:1 ratio, 45° pitch cone angle each</div></div></div></div>
+  <div id="miter-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -979,7 +1169,24 @@ Root Dia        dfe = m × (Z − 2.5 × cos(45°))</div>
       <div class="mcard"><div class="mc-label">Cone Distance R</div><div class="mc-val" id="ze-r-R">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="ze-r-dims"></div></div>
+  
+  <div class="card" id="zr-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="zr_kw" type="number" value="5" step="0.1" oninput="calcZerolStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="zr_rpm" type="number" value="1000" oninput="calcZerolStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="zr_sf" type="number" value="2" step="0.1" oninput="calcZerolStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="zr_b" type="number" value="20" oninput="calcZerolStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="zr_mat" onchange="fillMat('zr')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="zr_sb" type="number" value="280" oninput="calcZerolStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="zr_sc" type="number" value="900" oninput="calcZerolStress()"></div></div>
+    </div>
+    <div id="zr-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="zr-stress-checks" style="margin-top:8px"></div>
+    <div id="zr-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="zerol-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="ze-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear</div><div id="ze-geo2"></div></div>
@@ -1004,7 +1211,14 @@ Axial Thrust:
   (reverses direction when rotation reverses — suitable for bidirectional)</div>
       <div class="fnote">Zerol bevel can replace straight bevel in same housing without bearing changes. Curved teeth give smoother engagement than straight bevel while maintaining similar axial thrust levels.</div>
     </div>
-  <div id="zerol-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="zerol-svg" width="420" height="320" viewBox="-210 -160 420 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Zerol bevel gear — curved teeth with zero spiral angle at midpoint</div></div></div></div>
+  <div id="zerol-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1054,7 +1268,24 @@ Axial Thrust:
     <div class="card"><div class="sec-title">Geometry — BS 721-2</div><div id="wo-r-dims"></div></div>
     <div class="card"><div class="sec-title">Backlash &amp; Inspection — IS:3734</div><div id="wo-r-inspect"></div></div>
     <div class="card"><div class="sec-title">Compatibility Checks</div><div id="wo-r-checks"></div></div>
+  
+  <div class="card" id="wr-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="wr_kw" type="number" value="5" step="0.1" oninput="calcWormStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="wr_rpm" type="number" value="1000" oninput="calcWormStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="wr_sf" type="number" value="2" step="0.1" oninput="calcWormStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="wr_b" type="number" value="20" oninput="calcWormStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="wr_mat" onchange="fillMat('wr')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="wr_sb" type="number" value="280" oninput="calcWormStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="wr_sc" type="number" value="900" oninput="calcWormStress()"></div></div>
+    </div>
+    <div id="wr-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="wr-stress-checks" style="margin-top:8px"></div>
+    <div id="wr-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="worm-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Worm (Driver) — BS 721-2</div><div id="wo-geo-worm"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Worm Wheel — BS 721-2</div><div id="wo-geo-wheel"></div></div>
@@ -1107,7 +1338,14 @@ STEP 20 — Self-Locking:      when γ < ρ  (lead angle < friction angle)</div>
       <div class="fnote">⚠ KEY: Worm and wheel dedendums are NOT equal. hf₁ ≠ hf₂. Clearance c lives entirely in the wheel root. This means ht₁ ≠ ht₂ and root widths differ. Never use 1.25×m for both — that is the common error. Standard: BS 721-2:1983, IS:3734, ISO 1122-1.</div>
     </div>
   </div>
-  <div id="worm-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="worm-svg" width="560" height="320" viewBox="-280 -160 560 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Worm gear pair — BS 721-2: pitch circles, throat dia, lead angle, tooth profile</div></div></div></div>
+  <div id="worm-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
 </div>
 
 <!-- ══════════════════════════════════════════════════════════════
@@ -1154,7 +1392,24 @@ STEP 20 — Self-Locking:      when γ < ρ  (lead angle < friction angle)</div>
       <div class="mcard"><div class="mc-label">Sliding Velocity</div><div class="mc-val" id="hy-r-vs">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="hy-r-dims"></div></div>
+  
+  <div class="card" id="hy-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="hy_kw" type="number" value="5" step="0.1" oninput="calcHypoidStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="hy_rpm" type="number" value="1000" oninput="calcHypoidStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="hy_sf" type="number" value="2" step="0.1" oninput="calcHypoidStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="hy_b" type="number" value="20" oninput="calcHypoidStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="hy_mat" onchange="fillMat('hy')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="hy_sb" type="number" value="280" oninput="calcHypoidStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="hy_sc" type="number" value="900" oninput="calcHypoidStress()"></div></div>
+    </div>
+    <div id="hy-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="hy-stress-checks" style="margin-top:8px"></div>
+    <div id="hy-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="hypoid-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="hy-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Ring Gear</div><div id="hy-geo2"></div></div>
@@ -1180,7 +1435,14 @@ Sliding Velocity Vs ≈ Vt × E / Rp2
 Cone angles depend on offset — use Gleason method for exact values</div>
       <div class="fnote">Hypoid offset E allows the pinion to have more teeth than equivalent spiral bevel, making it stronger. Requires extreme pressure (EP) gear oil due to high sliding velocity at tooth contact.</div>
     </div>
-  <div id="hypoid-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="hypoid-svg" width="420" height="320" viewBox="-210 -160 420 320"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Hypoid gear — offset axis, pinion below ring gear centerline</div></div></div></div>
+  <div id="hypoid-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1227,7 +1489,24 @@ Cone angles depend on offset — use Gleason method for exact values</div>
       <div class="mcard"><div class="mc-label">Centre Distance</div><div class="mc-val" id="ch-r-cd">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="ch-r-dims"></div></div>
+  
+  <div class="card" id="ch-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="ch_kw" type="number" value="5" step="0.1" oninput="calcCrossedHelicalStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="ch_rpm" type="number" value="1000" oninput="calcCrossedHelicalStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="ch_sf" type="number" value="2" step="0.1" oninput="calcCrossedHelicalStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="ch_b" type="number" value="20" oninput="calcCrossedHelicalStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="ch_mat" onchange="fillMat('ch')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="ch_sb" type="number" value="280" oninput="calcCrossedHelicalStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="ch_sc" type="number" value="900" oninput="calcCrossedHelicalStress()"></div></div>
+    </div>
+    <div id="ch-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="ch-stress-checks" style="margin-top:8px"></div>
+    <div id="ch-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="crossedhelical-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear 1</div><div id="ch-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Gear 2</div><div id="ch-geo2"></div></div>
@@ -1252,7 +1531,14 @@ Contact is POINT not line — low load capacity.
 Efficiency typically 50–90% depending on ψ and friction.</div>
       <div class="fnote">For 90° shaft angle with same-hand helices: ψ₁ + ψ₂ = 90°. Using ψ₁ = ψ₂ = 45° gives equal load sharing. Point contact makes these unsuitable for heavy power transmission.</div>
     </div>
-  <div id="crossedhelical-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="crossedhelical-svg" width="460" height="280" viewBox="-230 -140 460 280"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Crossed helical gear pair — skew axes, point contact</div></div></div></div>
+  <div id="crossedhelical-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1292,7 +1578,24 @@ Efficiency typically 50–90% depending on ψ and friction.</div>
       <div class="mcard"><div class="mc-label">Face Gear Dia</div><div class="mc-val" id="sr-r-d">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="sr-r-dims"></div></div>
+  
+  <div class="card" id="spi-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="spi_kw" type="number" value="5" step="0.1" oninput="calcSpiroidStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="spi_rpm" type="number" value="1000" oninput="calcSpiroidStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="spi_sf" type="number" value="2" step="0.1" oninput="calcSpiroidStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="spi_b" type="number" value="20" oninput="calcSpiroidStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="spi_mat" onchange="fillMat('spi')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="spi_sb" type="number" value="280" oninput="calcSpiroidStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="spi_sc" type="number" value="900" oninput="calcSpiroidStress()"></div></div>
+    </div>
+    <div id="spi-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="spi-stress-checks" style="margin-top:8px"></div>
+    <div id="spi-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="spiroid-formulas" style="display:none">
     <div class="card"><div class="sec-title">Spiroid Gear Formulas</div>
       <div class="fbox">Gear Ratio      i   = Z / N
@@ -1311,7 +1614,14 @@ Ratio Range: 10:1 to 300:1 in single stage
 Efficiency:  60–90% (vs 30–80% for worm gear)</div>
       <div class="fnote">Spiroid combines worm-type ratio with bevel-type efficiency. The tapered worm creates line contact instead of worm gear's sliding contact — significantly improving efficiency and load capacity.</div>
     </div>
-  <div id="spiroid-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="spiroid-svg" width="420" height="300" viewBox="-210 -150 420 300"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Spiroid gear — tapered worm with face gear wheel</div></div></div></div>
+  <div id="spiroid-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1352,7 +1662,24 @@ Efficiency:  60–90% (vs 30–80% for worm gear)</div>
       <div class="mcard"><div class="mc-label">Pitch Radius</div><div class="mc-val" id="rp-r-r">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="rp-r-dims"></div></div>
+  
+  <div class="card" id="rk-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="rk_kw" type="number" value="5" step="0.1" oninput="calcRackStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="rk_rpm" type="number" value="1000" oninput="calcRackStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="rk_sf" type="number" value="2" step="0.1" oninput="calcRackStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="rk_b" type="number" value="20" oninput="calcRackStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="rk_mat" onchange="fillMat('rk')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="rk_sb" type="number" value="280" oninput="calcRackStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="rk_sc" type="number" value="900" oninput="calcRackStress()"></div></div>
+    </div>
+    <div id="rk-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="rk-stress-checks" style="margin-top:8px"></div>
+    <div id="rk-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="rack-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="rp-geo-pin"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Rack (linear)</div><div id="rp-geo-rack"></div></div>
@@ -1376,7 +1703,14 @@ Rack tooth geometry is identical to spur gear tooth but on a flat surface.
 Rack pitch = circular pitch = π × m</div>
       <div class="fnote">Smaller pinion = less linear travel per revolution (more force, less speed). Larger pinion = more travel (less force, more speed). Use this to match your application's force vs speed needs.</div>
     </div>
-  <div id="rack-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="rack-svg" width="520" height="280" viewBox="-260 -140 520 280"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Rack & pinion — rotary to linear motion conversion</div></div></div></div>
+  <div id="rack-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1422,7 +1756,24 @@ Rack pitch = circular pitch = π × m</div>
       <div class="mcard"><div class="mc-label">Face Gear ID</div><div class="mc-val" id="fg-r-id">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="fg-r-dims"></div></div>
+  
+  <div class="card" id="fg-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="fg_kw" type="number" value="5" step="0.1" oninput="calcFaceGearStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="fg_rpm" type="number" value="1000" oninput="calcFaceGearStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="fg_sf" type="number" value="2" step="0.1" oninput="calcFaceGearStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="fg_b" type="number" value="20" oninput="calcFaceGearStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="fg_mat" onchange="fillMat('fg')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="fg_sb" type="number" value="280" oninput="calcFaceGearStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="fg_sc" type="number" value="900" oninput="calcFaceGearStress()"></div></div>
+    </div>
+    <div id="fg-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="fg-stress-checks" style="margin-top:8px"></div>
+    <div id="fg-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="facegear-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Pinion</div><div id="fg-geo-pin"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Face Gear</div><div id="fg-geo-face"></div></div>
@@ -1449,7 +1800,14 @@ Face Gear Radial Limits:
 Key advantage: Pinion can slide axially without changing ratio or mesh.</div>
       <div class="fnote">Face gear is insensitive to pinion axial position — makes assembly and maintenance easier than bevel gears. Used in split-torque helicopter transmissions where two pinions drive one face gear simultaneously.</div>
     </div>
-  <div id="facegear-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="facegear-svg" width="400" height="360" viewBox="-200 -180 400 360"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Face gear — pinion meshes with flat ring gear face</div></div></div></div>
+  <div id="facegear-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1495,7 +1853,24 @@ Key advantage: Pinion can slide axially without changing ratio or mesh.</div>
       <div class="mcard"><div class="mc-label">ψ₂ (Gear 2)</div><div class="mc-val" id="sg-r-psi2">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="sg-r-dims"></div></div>
+  
+  <div class="card" id="sg-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="sg_kw" type="number" value="5" step="0.1" oninput="calcScrewGearStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="sg_rpm" type="number" value="1000" oninput="calcScrewGearStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="sg_sf" type="number" value="2" step="0.1" oninput="calcScrewGearStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="sg_b" type="number" value="20" oninput="calcScrewGearStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="sg_mat" onchange="fillMat('sg')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="sg_sb" type="number" value="280" oninput="calcScrewGearStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="sg_sc" type="number" value="900" oninput="calcScrewGearStress()"></div></div>
+    </div>
+    <div id="sg-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="sg-stress-checks" style="margin-top:8px"></div>
+    <div id="sg-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="screwgear-formulas" style="display:none">
     <div class="card"><div class="sec-title">Screw Gear Formulas</div>
       <div class="fbox">ψ₂ = Σ − ψ₁  (same hand)  or  ψ₂ = ψ₁ − Σ  (opposite)
@@ -1515,7 +1890,14 @@ Efficiency η = (cos(φₙ)−μ×tan(ψ₁)) / (cos(φₙ)+μ/tan(ψ₁))
 Lead  L = π × mₙ × Z / cos(ψ) × (1/tan(ψ)) = π × d × tan(ψ)</div>
       <div class="fnote">Screw gears are essentially crossed helical gears used as motion converters. Point contact severely limits load — typically used only for instrument and light positioning drives.</div>
     </div>
-  <div id="screwgear-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="screwgear-svg" width="460" height="280" viewBox="-230 -140 460 280"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Screw gear pair — skew-axis crossed helical gears</div></div></div></div>
+  <div id="screwgear-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1554,7 +1936,24 @@ Lead  L = π × mₙ × Z / cos(ψ) × (1/tan(ψ)) = π × d × tan(ψ)</div>
       <div class="mcard"><div class="mc-label">Centre Distance</div><div class="mc-val" id="nc-r-cd">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="nc-r-dims"></div></div>
+  
+  <div class="card" id="nc-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="nc_kw" type="number" value="5" step="0.1" oninput="calcNonCircularStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="nc_rpm" type="number" value="1000" oninput="calcNonCircularStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="nc_sf" type="number" value="2" step="0.1" oninput="calcNonCircularStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="nc_b" type="number" value="20" oninput="calcNonCircularStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="nc_mat" onchange="fillMat('nc')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="nc_sb" type="number" value="280" oninput="calcNonCircularStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="nc_sc" type="number" value="900" oninput="calcNonCircularStress()"></div></div>
+    </div>
+    <div id="nc-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="nc-stress-checks" style="margin-top:8px"></div>
+    <div id="nc-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="noncircular-formulas" style="display:none">
     <div class="card"><div class="sec-title">Non-Circular Gear Formulas (Elliptical)</div>
       <div class="fbox">Ellipse equation:  r(θ) = a(1−e²) / (1 + e×cos(θ))
@@ -1574,7 +1973,14 @@ Tooth Height (use at mean radius):
   Face Width  B  = k × m</div>
       <div class="fnote">Centre distance C = 2×a (sum of semi-major axes for two identical elliptical gears). Both gears must be identical and phased 180° apart. Module is specified at the design pitch point.</div>
     </div>
-  <div id="noncircular-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="noncircular-svg" width="460" height="300" viewBox="-230 -150 460 300"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Elliptical non-circular gear — variable ratio output</div></div></div></div>
+  <div id="noncircular-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1621,7 +2027,24 @@ Tooth Height (use at mean radius):
       <div class="mcard"><div class="mc-label">Pitch Dia 1</div><div class="mc-val" id="cy-r-d1">—</div></div>
     </div>
     <div class="card"><div class="sec-title">Geometry</div><div id="cy-r-dims"></div></div>
+  
+  <div class="card" id="cy-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="cy_kw" type="number" value="5" step="0.1" oninput="calcCycloidalStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="cy_rpm" type="number" value="1000" oninput="calcCycloidalStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="cy_sf" type="number" value="2" step="0.1" oninput="calcCycloidalStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="cy_b" type="number" value="20" oninput="calcCycloidalStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="cy_mat" onchange="fillMat('cy')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="cy_sb" type="number" value="280" oninput="calcCycloidalStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="cy_sc" type="number" value="900" oninput="calcCycloidalStress()"></div></div>
+    </div>
+    <div id="cy-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="cy-stress-checks" style="margin-top:8px"></div>
+    <div id="cy-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="cycloidal-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Gear 1</div><div id="cy-geo1"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Gear 2</div><div id="cy-geo2"></div></div>
@@ -1649,7 +2072,14 @@ Tooth Height:
 Pressure angle varies from 0° at pitch point — NOT constant like involute.</div>
       <div class="fnote">Cycloidal gears require precise centre distance — unlike involute gears which tolerate small centre distance errors. Used in clocks because very small tooth counts (even 3 teeth) work without undercutting.</div>
     </div>
-  <div id="cycloidal-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="cycloidal-svg" width="460" height="280" viewBox="-230 -140 460 280"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Cycloidal gear pair — epicycloidal addendum, hypocycloidal dedendum</div></div></div></div>
+  <div id="cycloidal-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -1695,7 +2125,24 @@ Pressure angle varies from 0° at pitch point — NOT constant like involute.</d
     </div>
     <div class="card"><div class="sec-title">Checks &amp; Notes</div><div id="hd-r-checks"></div></div>
     <div class="card"><div class="sec-title">Geometry</div><div id="hd-r-dims"></div></div>
+  
+  <div class="card" id="hd-stress-section" style="margin-top:0.9rem;border-left:3px solid var(--accent)">
+    <div class="sec-title">⚙ Stress Analysis — IS 9001 / ISO 6336</div>
+    <div class="g3" style="margin-bottom:10px">
+      <div class="field"><label>Power (kW)</label><input id="hd_kw" type="number" value="5" step="0.1" oninput="calcHarmonicStress()"></div>
+      <div class="field"><label>Speed (RPM)</label><input id="hd_rpm" type="number" value="1000" oninput="calcHarmonicStress()"></div>
+      <div class="field"><label>Safety Factor SF</label><input id="hd_sf" type="number" value="2" step="0.1" oninput="calcHarmonicStress()"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Face Width b (mm)</label><input id="hd_b" type="number" value="20" oninput="calcHarmonicStress()"></div>
+    <div class="g2" style="margin-bottom:10px">
+      <div class="field"><label>Material</label><select id="hd_mat" onchange="fillMat('hd')" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;"><option value="c45">C45 Steel (σb=140, σc=550)</option><option value="en8">EN8 Steel (σb=170, σc=700)</option><option value="en36" selected>EN36 Steel (σb=280, σc=900)</option><option value="ci">Cast Iron (σb=70, σc=350)</option></select></div>
+      <div class="g2"><div class="field"><label>Allow. Bending σb (MPa)</label><input id="hd_sb" type="number" value="280" oninput="calcHarmonicStress()"></div><div class="field"><label>Allow. Contact σc (MPa)</label><input id="hd_sc" type="number" value="900" oninput="calcHarmonicStress()"></div></div>
+    </div>
+    <div id="hd-stress-metrics" class="stress-metrics" style="margin-top:8px"></div>
+    <div id="hd-stress-checks" style="margin-top:8px"></div>
+    <div id="hd-stress-banner" style="margin-top:6px"></div>
   </div>
+</div>
   <div id="harmonic-geometry" style="display:none">
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--accent)"></div>Circular Spline (rigid)</div><div id="hd-geo-cs"></div></div>
     <div class="card"><div class="gear-hdr"><div class="dot" style="background:var(--yellow)"></div>Flex Spline (flexible)</div><div id="hd-geo-fs"></div></div>
@@ -1723,7 +2170,14 @@ Backlash   ≈ 0–3 arc-minutes (vs 5–30 for conventional gears)
 Efficiency η = 65–90% (lower at high ratios due to flex losses)</div>
       <div class="fnote">ΔZ = 2 means the flex spline has 2 fewer teeth than circular spline — each wave generator revolution advances output by 2 teeth. Zero backlash makes harmonic drives essential for robot joints requiring precise positioning.</div>
     </div>
-  <div id="harmonic-diagram" style="display:none"><div class="card"><div class="vis-wrap"><svg id="harmonic-svg" width="380" height="380" viewBox="-190 -190 380 380"></svg><div style="font-size:12px;color:var(--txt3);margin-top:8px">Harmonic drive — wave generator, flex spline, circular spline</div></div></div></div>
+  <div id="harmonic-diagram" style="display:none">
+  <div class="card" style="text-align:center;padding:2.5rem 1rem;">
+      <div style="font-size:40px;margin-bottom:12px;opacity:0.2">📐</div>
+      <div style="font-size:14px;font-weight:500;color:var(--txt2);margin-bottom:6px">Technical Drawings</div>
+      <div style="font-size:12px;color:var(--txt3);max-width:320px;margin:0 auto;line-height:1.6">Engineering drawings — tooth profile, cross-sections, and assembly views — coming in a future release.</div>
+      <div style="margin-top:1rem;display:inline-flex;align-items:center;gap:6px;background:var(--bg-info);color:var(--txt-info);padding:5px 14px;border-radius:var(--radius-sm);font-size:12px;font-weight:500">⏳ Coming Soon</div>
+    </div>
+</div>
   </div>
 </div>
 
@@ -2889,6 +3343,655 @@ function drawHarmonicDiagram(){
 }
 
 /* ─── Init all calculators on load ─── */
+
+/* ══════════════════════════════════════════════════════════
+   STRESS ANALYSIS FUNCTIONS (IS 9001 / ISO 6336)
+   Prefix convention: _kw _rpm _sf _mat _sb _sc _b
+══════════════════════════════════════════════════════════ */
+
+function smCard(label, val, unit) {
+  return '<div class="mcard"><div class="mc-label">'+label+'</div><div class="mc-val">'+val+' <span style="font-size:11px;color:var(--txt3)">'+unit+'</span></div></div>';
+}
+function smCheck(ok, label, req, actual) {
+  return '<div class="mrow"><span class="mk">'+label+'</span><span class="mv" style="color:'+(ok?'var(--txt-ok)':'var(--txt-warn)')+'">'+actual+' '+(ok?'✓':'✗ (req '+req+')')+'</span></div>';
+}
+function smBanner(ok) {
+  return '<div style="padding:8px 12px;border-radius:var(--radius-sm);font-size:12px;font-weight:500;margin-top:6px;display:flex;align-items:center;gap:6px;background:'+(ok?'var(--bg-ok)':'var(--bg-warn)')+';color:'+(ok?'var(--txt-ok)':'var(--txt-warn)')+'">'+(ok?'✓ All stress checks passed':'✗ Design requires review — see checks above')+'</div>';
+}
+function setStressResults(pfx, metrics, checks) {
+  var mEl=document.getElementById(pfx+'-stress-metrics');
+  var cEl=document.getElementById(pfx+'-stress-checks');
+  var bEl=document.getElementById(pfx+'-stress-banner');
+  if(mEl) mEl.innerHTML='<div class="g3">'+metrics.map(function(m){return smCard(m[0],m[1],m[2]);}).join('')+'</div>';
+  var allOk=checks.every(function(c){return c[0];});
+  if(cEl) cEl.innerHTML='<div class="card" style="margin-top:0">'+checks.map(function(c){return smCheck(c[0],c[1],c[2],c[3]);}).join('')+'</div>';
+  if(bEl) bEl.innerHTML=smBanner(allOk);
+}
+
+/* Generic Lewis+Hertz stress calc used by most parallel gears */
+function gearStressCalc(pfx, z1, z2, m_mod, b_src) {
+  var kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  var b = b_src || v2(pfx+'_b') || (10*m_mod);
+  if(!kw||!rpm||!m_mod||!z1||!z2) return;
+  var d1=m_mod*z1;
+  var T=9550000*kw/rpm;           // N·mm
+  var Ft=2*T/d1;                  // N (d1 in mm, T in N·mm)
+  var vel=Math.PI*d1*rpm/60000;   // m/s
+  var Kv=3/(3+Math.max(vel,0.01));// Barth velocity factor (≤1, <1 = worse)
+  var Y1=0.154-0.912/Math.max(z1,1); // Lewis form factor pinion
+  var Y2=0.154-0.912/Math.max(z2,1); // Lewis form factor gear
+  // Lewis bending: σb = Ft·Kd / (m·b·Y)  where Kd = 1/Kv (dynamic factor)
+  var sig_b=(Ft/Kv)/(m_mod*b*Y1);
+  var ZH=2.5, ZE=191, u=z2/z1;
+  // Hertz contact: σc = ZH·ZE·√(Ft·Kd / (b·d1) · (u+1)/u)
+  var sig_c=ZH*ZE*Math.sqrt(Math.abs((Ft/Kv)/(b*d1)*(u+1)/u));
+  var sb_eff=sb/sf, sc_eff=sc/sf;
+  var i=z2/z1;
+  setStressResults(pfx,
+    [['Tangential Ft', Ft.toFixed(1),'N'],
+     ['Pitch Vel. v', vel.toFixed(2),'m/s'],
+     ['Vel. Factor Kv', Kv.toFixed(3),''],
+     ['Bending σb', sig_b.toFixed(1),'MPa'],
+     ['Contact σc', sig_c.toFixed(1),'MPa'],
+     ['Torque T', T.toFixed(0),'N·mm']],
+    [[sig_b<=sb_eff,'Bending stress σb', '≤'+sb_eff.toFixed(1)+' MPa', sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc_eff,'Contact stress σc', '≤'+sc_eff.toFixed(1)+' MPa', sig_c.toFixed(1)+' MPa'],
+     [z1>=17,'Min teeth Z₁ (undercut)','≥17','Z₁='+z1],
+     [b>=8*m_mod&&b<=16*m_mod,'Face width range','8m–16m = '+( 8*m_mod).toFixed(1)+'–'+(16*m_mod).toFixed(1)+' mm',b.toFixed(1)+' mm']]
+  );
+}
+
+function v2(id){var el=document.getElementById(id);return el?parseFloat(el.value)||0:0;}
+function vi2(id){var el=document.getElementById(id);return el?parseInt(el.value)||0:0;}
+
+function calcSpurStress(){gearStressCalc('sp',vi2('sp-z1'),vi2('sp-z2'),v2('sp-m'));}
+function calcHelicalStress(){gearStressCalc('he',vi2('he-z1'),vi2('he-z2'),v2('he-mn'));}
+function calcHerringboneStress(){gearStressCalc('hb',vi2('hb-z1'),vi2('hb-z2'),v2('hb-mn'));}
+function calcInternalStress(){gearStressCalc('ig',vi2('ig-zp'),vi2('ig-zr'),v2('ig-m'));}
+function calcPlanetaryStress(){gearStressCalc('pl',vi2('pl-zs'),vi2('pl-zp'),v2('pl-m'));}
+function calcStraightBevelStress(){
+  var pfx='sbv',kw=v2(pfx+'_kw'),rpm=v2(pfx+'_rpm'),sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'),sc=v2(pfx+'_sc');
+  var z1=vi2('sb-z1'),z2=vi2('sb-z2'),m=v2('sb-m'),b=v2(pfx+'_b')||20;
+  if(!kw||!rpm||!m) return;
+  gearStressCalc(pfx,z1,z2,m,b);
+}
+function calcSpiralBevelStress(){
+  var pfx='spb',z1=vi2('spb-z1'),z2=vi2('spb-z2'),m=v2('spb-m');
+  gearStressCalc(pfx,z1,z2,m);
+}
+function calcMiterStress(){var z=vi2('mi-z')||20,m=v2('mi-m')||2;gearStressCalc('mi',z,z,m);}
+function calcZerolStress(){var z1=vi2('ze-z1'),z2=vi2('ze-z2'),m=v2('ze-m');gearStressCalc('zr',z1,z2,m);}
+function calcWormStress(){
+  var pfx='wr', kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  // Correct IDs: worm starts from wo-z1 (select), wheel teeth from wo-zw, module from wo-m
+  var z1=parseInt((document.getElementById('wo-z1')||{}).value)||1;
+  var z2=vi2('wo-zw')||40;
+  var m=v2('wo-m')||4;
+  var q=v2('wo-q')||10;
+  var b=v2(pfx+'_b')||20;
+  if(!kw||!rpm) return;
+  var d1=q*m;                        // worm PCD
+  var d2=m*z2;                       // wheel PCD
+  var gammaR=Math.atan(z1/q);        // lead angle
+  var T=9550000*kw/rpm;              // input torque N·mm
+  var Ft_worm=2*T/d1;                // tangential force on worm
+  var vel=Math.PI*d1*rpm/60000;      // pitch velocity m/s
+  var Kv=3/(3+Math.max(vel,0.01));   // velocity factor
+  // Worm wheel Lewis factor (Merritt/AGMA approximation for worm wheel)
+  var Y2=0.125;                      // ~Lewis Y for Z2=40 with curved tooth
+  var sig_b=(Ft_worm/Kv)/(m*b*Y2);  // bending stress on wheel tooth
+  // Hertz contact for cylindrical worm (approximate)
+  var ZE=191;
+  var i=z2/z1;
+  var sig_c=ZE*Math.sqrt(Math.abs((Ft_worm/Kv)/(b*d2)));
+  setStressResults(pfx,
+    [['Input Torque T', T.toFixed(0),'N·mm'],
+     ['Tangential Ft', Ft_worm.toFixed(1),'N'],
+     ['Pitch Vel. v', vel.toFixed(2),'m/s'],
+     ['Vel. Factor Kv', Kv.toFixed(3),''],
+     ['Wheel σb', sig_b.toFixed(1),'MPa'],
+     ['Ratio i', i.toFixed(0),'']],
+    [[sig_b<=sb/sf,'Wheel bending stress σb','≤'+(sb/sf).toFixed(1)+' MPa',sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc/sf,'Contact stress σc (approx)','≤'+(sc/sf).toFixed(1)+' MPa',sig_c.toFixed(1)+' MPa']]
+  );
+}
+function calcHypoidStress(){var z1=vi2('hy-z1')||6,z2=vi2('hy-z2')||30,m=v2('hy-m')||3;gearStressCalc('hy',z1,z2,m);}
+function calcCrossedHelicalStress(){var z1=vi2('ch-z1')||20,z2=vi2('ch-z2')||40,m=v2('ch-mn')||2;gearStressCalc('ch',z1,z2,m);}
+function calcSpiroidStress(){
+  var pfx='spi', kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  var z1=parseInt((document.getElementById('sr-n')||{}).value)||1; // worm starts
+  var z2=vi2('sr-z')||60;   // fixed: sr-z (face gear teeth)
+  var m=v2('sr-m')||2;      // fixed: sr-m
+  var b=v2(pfx+'_b')||20;
+  if(!kw||!rpm) return;
+  var d2=m*z2, T=9550000*kw/rpm, Ft=2*T/d2;
+  var vel=Math.PI*d2*rpm/60000/z2; // approx sliding
+  var Kv=3/(3+Math.max(vel,0.01));
+  var Y=0.125; // approximate for face gear
+  var sig_b=(Ft/Kv)/(m*b*Y);
+  var ZE=191;
+  var sig_c=ZE*Math.sqrt(Math.abs((Ft/Kv)/(b*d2)));
+  setStressResults(pfx,
+    [['Input Torque T',T.toFixed(0),'N·mm'],
+     ['Tangential Ft',Ft.toFixed(1),'N'],
+     ['Vel. Factor Kv',Kv.toFixed(3),''],
+     ['Face Gear σb',sig_b.toFixed(1),'MPa'],
+     ['Contact σc',sig_c.toFixed(1),'MPa'],
+     ['Ratio i',(z2/z1).toFixed(0),'']],
+    [[sig_b<=sb/sf,'Face gear bending σb','≤'+(sb/sf).toFixed(1)+' MPa',sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc/sf,'Contact stress σc','≤'+(sc/sf).toFixed(1)+' MPa',sig_c.toFixed(1)+' MPa']]
+  );
+}
+function calcRackStress(){
+  var pfx='rk', kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var m=v2('rp-m')||2, z=vi2('rp-z')||20;   // fixed: rp-m and rp-z (not ra-)
+  var b=v2(pfx+'_b')||20, sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  if(!kw||!rpm) return;
+  var d=m*z, T=9550000*kw/rpm, Ft=2*T/d;
+  var vel=Math.PI*d*rpm/60000;
+  var Kv=3/(3+Math.max(vel,0.01));
+  var Y=0.154-0.912/Math.max(z,1);
+  var sig_b=(Ft/Kv)/(m*b*Y);
+  // Rack contact stress (pinion against flat rack, u→∞ so (u+1)/u→1)
+  var ZH=2.5, ZE=191;
+  var sig_c=ZH*ZE*Math.sqrt(Math.abs((Ft/Kv)/(b*d)));
+  setStressResults(pfx,
+    [['Tangential Ft',Ft.toFixed(1),'N'],
+     ['Pitch Vel. v',vel.toFixed(2),'m/s'],
+     ['Vel. Factor Kv',Kv.toFixed(3),''],
+     ['Bending σb',sig_b.toFixed(1),'MPa'],
+     ['Contact σc',sig_c.toFixed(1),'MPa'],
+     ['Torque T',T.toFixed(0),'N·mm']],
+    [[sig_b<=sb/sf,'Pinion bending σb','≤'+(sb/sf).toFixed(1)+' MPa',sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc/sf,'Contact stress σc','≤'+(sc/sf).toFixed(1)+' MPa',sig_c.toFixed(1)+' MPa'],
+     [b>=8*m&&b<=16*m,'Face width range','8m–16m = '+(8*m).toFixed(1)+'–'+(16*m).toFixed(1)+' mm',b.toFixed(1)+' mm']]
+  );
+}
+function calcFaceGearStress(){var z1=vi2('fg-zp')||16,z2=vi2('fg-zf')||64,m=v2('fg-m')||2;gearStressCalc('fg',z1,z2,m);}
+function calcScrewGearStress(){var z1=vi2('sg-z1')||20,z2=vi2('sg-z2')||40,m=v2('sg-mn')||2;gearStressCalc('sg',z1,z2,m);}
+function calcNonCircularStress(){
+  var pfx='nc', kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  var a=v2('nc-a')||80, b_axis=v2('nc-b')||50, m=v2('nc-m')||2;
+  var b=v2(pfx+'_b')||20;
+  if(!kw||!rpm||!m) return;
+  // Derive equivalent tooth count from mean pitch radius
+  var r_mean=(a+b_axis)/2;            // mean pitch radius mm
+  var z_eq=Math.round(2*Math.PI*r_mean/m); // approximate Z at mean radius
+  var d_mean=2*r_mean;
+  var T=9550000*kw/rpm;
+  var Ft=2*T/d_mean;
+  var vel=Math.PI*d_mean*rpm/60000;
+  var Kv=3/(3+Math.max(vel,0.01));
+  var Y=0.154-0.912/Math.max(z_eq,1);
+  var sig_b=(Ft/Kv)/(m*b*Y);
+  var ZH=2.5, ZE=191;
+  var sig_c=ZH*ZE*Math.sqrt(Math.abs((Ft/Kv)/(b*d_mean)));
+  setStressResults(pfx,
+    [['Equiv. teeth Z_eq',z_eq,''],
+     ['Mean PCD',d_mean.toFixed(1),'mm'],
+     ['Tangential Ft',Ft.toFixed(1),'N'],
+     ['Vel. Factor Kv',Kv.toFixed(3),''],
+     ['Bending σb',sig_b.toFixed(1),'MPa'],
+     ['Contact σc',sig_c.toFixed(1),'MPa']],
+    [[sig_b<=sb/sf,'Bending stress (mean)','≤'+(sb/sf).toFixed(1)+' MPa',sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc/sf,'Contact stress (mean)','≤'+(sc/sf).toFixed(1)+' MPa',sig_c.toFixed(1)+' MPa'],
+     [b_axis/a>=0.5,'Eccentricity check','b/a ≥ 0.5',(b_axis/a).toFixed(3)]]
+  );
+}
+function calcCycloidalStress(){var z1=vi2('cy-z1')||12,z2=vi2('cy-z2')||24,m=v2('cy-m')||4;gearStressCalc('cy',z1,z2,m);}
+function calcHarmonicStress(){
+  var pfx='hd', kw=v2(pfx+'_kw'), rpm=v2(pfx+'_rpm'), sf=v2(pfx+'_sf')||2;
+  var sb=v2(pfx+'_sb'), sc=v2(pfx+'_sc');
+  var zf=vi2('hd-zf')||200, zc=vi2('hd-zc')||202, m=v2('hd-m')||0.5;
+  var b=v2(pfx+'_b')||20;
+  if(!kw||!rpm) return;
+  var dZ=zc-zf, i=zc/dZ;
+  var d=m*zf, T=9550000*kw/rpm, Ft=2*T/d;
+  var vel=Math.PI*d*rpm/60000;
+  var Kv=3/(3+Math.max(vel,0.01));
+  // Harmonic drive: flexspline fatigue is bending-critical
+  var Y=0.154-0.912/Math.max(zf,1);
+  var sig_b=(Ft/Kv)/(m*b*Y);
+  // Contact (cyclic meshing both sides of oval)
+  var ZE=191;
+  var sig_c=ZE*Math.sqrt(Math.abs((Ft/Kv)/(b*d)));
+  setStressResults(pfx,
+    [['Input Torque T',T.toFixed(0),'N·mm'],
+     ['Tangential Ft',Ft.toFixed(1),'N'],
+     ['Vel. Factor Kv',Kv.toFixed(3),''],
+     ['Flex spline σb',sig_b.toFixed(1),'MPa'],
+     ['Contact σc',sig_c.toFixed(1),'MPa'],
+     ['Ratio i',i.toFixed(0),'']],
+    [[sig_b<=sb/sf,'Flex spline bending σb','≤'+(sb/sf).toFixed(1)+' MPa',sig_b.toFixed(1)+' MPa'],
+     [sig_c<=sc/sf,'Contact stress σc','≤'+(sc/sf).toFixed(1)+' MPa',sig_c.toFixed(1)+' MPa'],
+     [dZ===2,'Tooth difference ΔZ','= 2','ΔZ='+dZ]]
+  );
+}
+
+/* ── stabM: tab switcher for mechanism panels ── */
+function stabM(btn, panelId) {
+  // Collect all sibling panel IDs registered in the same pane
+  var pane = btn.closest('.calc-pane');
+  if (!pane) return;
+  // Hide all tab panels that are siblings managed by stabM
+  pane.querySelectorAll('.tab').forEach(function(b) {
+    var pid = b.getAttribute('onclick');
+    var m = pid && pid.match(/stabM\(this,'([^']+)'\)/);
+    if (m) {
+      var el = document.getElementById(m[1]);
+      if (el) el.style.display = 'none';
+    }
+    b.classList.remove('on');
+  });
+  var t = document.getElementById(panelId);
+  if (t) t.style.display = '';
+  btn.classList.add('on');
+}
+
+/* ── fillMat: populate bending/contact from material preset ── */
+function fillMat(pfx) {
+  var mats={c45:{sb:140,sc:550},en8:{sb:170,sc:700},en36:{sb:280,sc:900},ci:{sb:70,sc:350}};
+  var el=document.getElementById(pfx+'_mat');
+  if(!el) return;
+  var mat=mats[el.value];
+  if(!mat) return;
+  var sbEl=document.getElementById(pfx+'_sb');
+  var scEl=document.getElementById(pfx+'_sc');
+  if(sbEl) sbEl.value=mat.sb;
+  if(scEl) scEl.value=mat.sc;
+  // Re-run the stress calc
+  var fn=window['calc'+pfx.charAt(0).toUpperCase()+pfx.slice(1)+'Stress'];
+  if(fn) try{fn();}catch(e){}
+}
+
+
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION 6 HELPER FUNCTIONS
+══════════════════════════════════════════════════════════════ */
+
+/* Number formatter for section 6 */
+function n(val, dec){ dec = dec === undefined ? 2 : dec; return isFinite(val) ? val.toFixed(dec) : '—'; }
+
+/* Geneva metric card */
+function mechMetric(label, val, unit, hi){
+  return '<div class="mech-metric'+(hi?' hi':'')+'"><div class="mc-label">'+label+'</div>'
+       + '<div class="mc-val">'+val+'</div><div class="mc-unit">'+unit+'</div></div>';
+}
+
+/* Geneva results table row */
+function mechRow(param, sym, val){
+  return '<tr><td>'+param+'</td><td>'+sym+'</td><td>'+val+'</td></tr>';
+}
+
+/* Geneva design check row */
+function mechCheck(ok, label, detail){
+  return '<div class="mech-check"><span class="ck-label">'+(ok?'✓ ':'✗ ')+label+'</span>'
+       + '<span class="'+(ok?'ck-pass':'ck-fail')+'">'+detail+'</span></div>';
+}
+
+/* Cam result row */
+function camRow(label, val, badge){
+  return '<div class="cam-result-row"><span class="rk">'+label+'</span>'
+       + '<span class="rv">'+val+'</span>'+(badge||'')+'</div>';
+}
+function camStatusBadge(actual, limit){
+  return actual <= limit
+    ? '<span class="cam-badge-ok">OK</span>'
+    : '<span class="cam-badge-fail">FAIL</span>';
+}
+function camBanner(allOk, failMsg){
+  return '<div class="mech-banner '+(allOk?'ok':'fail')+'">'
+       + (allOk ? '✓ All checks passed' : '✗ Check failed: '+failMsg)+'</div>';
+}
+
+/* Ratchet metric card */
+function renderMetrics(elId, items){
+  var el = document.getElementById(elId); if(!el) return;
+  el.innerHTML = '<div class="mech-metrics">'
+    + items.map(function(it){
+        return '<div class="mech-metric"><div class="mc-label">'+it.name+'</div>'
+             + '<div class="mc-val">'+it.val+'</div><div class="mc-unit">'+it.unit+'</div></div>';
+      }).join('') + '</div>';
+}
+
+/* Ratchet check table */
+function renderChecks(elId, checks){
+  var el = document.getElementById(elId); if(!el) return;
+  el.innerHTML = '<table class="rat-table"><thead><tr>'
+    + '<th>Check</th><th>Limit</th><th>Actual</th><th>Status</th></tr></thead><tbody>'
+    + checks.map(function(c){
+        return '<tr><td>'+c.name+'</td><td>'+c.req+'</td><td>'+c.actual+'</td>'
+             + '<td class="'+(c.ok?'rat-pass':'rat-fail')+'">'+(c.ok?'✓ Pass':'✗ Fail')+'</td></tr>';
+      }).join('') + '</tbody></table>';
+}
+
+/* Ratchet status banner */
+function renderStatus(elId, checks){
+  var el = document.getElementById(elId); if(!el) return;
+  var allOk = checks.every(function(c){ return c.ok; });
+  el.innerHTML = '<div class="mech-banner '+(allOk?'ok':'fail')+'">'
+    + (allOk ? '✓ All stress and geometry checks passed'
+             : '✗ Design requires review — see failed checks above') + '</div>';
+}
+
+/* Geneva diagram tab switcher */
+function showDtab(mech, panel, btn){
+  var prefix = 'dtab-'+mech+'-';
+  ['results','diagram','formulas','notes'].forEach(function(p){
+    var el = document.getElementById(prefix+p);
+    if(el) el.classList.remove('active');
+  });
+  var target = document.getElementById(prefix+panel);
+  if(target) target.classList.add('active');
+  if(btn){
+    btn.closest('.dtab-bar').querySelectorAll('.dtab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  if(panel === 'diagram') drawGeneva(
+    Math.round(v('g_slots')||4), v('g_r')||30,
+    (v('g_r')||30)/Math.sin(Math.PI/(Math.round(v('g_slots')||4))),
+    Math.sqrt(Math.pow((v('g_r')||30)/Math.sin(Math.PI/(Math.round(v('g_slots')||4))),2)-Math.pow(v('g_r')||30,2)),
+    Math.PI/2 - Math.PI/(Math.round(v('g_slots')||4))
+  );
+}
+
+/* Ratchet material preset */
+function fillRatMat(){
+  var mats = {c45:{sb:140,ss:80},en8:{sb:170,ss:100},en36:{sb:280,ss:160}};
+  var sel = document.getElementById('rat_mat');
+  if(!sel) return;
+  var m = mats[sel.value]; if(!m) return;
+  var sbEl = document.getElementById('rat_sb'); if(sbEl) sbEl.value = m.sb;
+  var ssEl = document.getElementById('rat_ss'); if(ssEl) ssEl.value = m.ss;
+  calcRatchet();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6.1 GENEVA MECHANISM
+══════════════════════════════════════════════════════════════ */
+function calcGeneva(){
+  var n=Math.round(v('g_slots')||4), r=v('g_r')||30, rpm=v('g_rpm')||60,
+      rp=v('g_pin')||4, ks=v('g_ks')||1.25, mat=v('g_mat')||260;
+  if(n<3) n=3; if(n>10) n=10;
+  var a = r / Math.sin(Math.PI/n);
+  var R = Math.sqrt(a*a - r*r);
+  var alpha = Math.PI/2 - Math.PI/n;
+  var theta_wheel = 360/n;
+  var beta_dwell = 360 - 2*alpha*180/Math.PI;
+  var t_cycle = 60/rpm;
+  var engage_frac = 2*alpha/(2*Math.PI);
+  var t_index = t_cycle * engage_frac;
+  var t_dwell = t_cycle * (1 - engage_frac);
+  var omega_driver = 2*Math.PI*rpm/60;
+  var omega_max = omega_driver*r*a / (a*a + r*r - 2*a*r*Math.cos(alpha));
+  var D_wheel = 2*(R + rp + 2);
+  var slot_w = 2*rp + 0.1;
+
+  var mEl = document.getElementById('g_metrics');
+  if(mEl) mEl.innerHTML =
+    mechMetric('Slots n', n, '', false) +
+    mechMetric('Ctr. Distance a', n2(a), 'mm', true) +
+    mechMetric('Lock Radius R', n2(R), 'mm', false) +
+    mechMetric('Index Angle', n1(theta_wheel), '°/cycle', false) +
+    mechMetric('Index Time', t_index.toFixed(3), 's', false) +
+    mechMetric('Wheel Dia.', n1(D_wheel), 'mm', true);
+
+  var tEl = document.getElementById('g_table');
+  if(tEl) tEl.innerHTML =
+    mechRow('Centre distance','a', n2(a)+' mm') +
+    mechRow('Lock radius (wheel)','R', n2(R)+' mm') +
+    mechRow('Engagement half-angle','α', n2(alpha*180/Math.PI)+'°') +
+    mechRow('Index angle / cycle','θ', n1(theta_wheel)+'°') +
+    mechRow('Dwell angle (driver)','β', n1(beta_dwell)+'°') +
+    mechRow('Index time','t_i', t_index.toFixed(4)+' s') +
+    mechRow('Dwell time','t_d', t_dwell.toFixed(4)+' s') +
+    mechRow('Engage ratio','%', (engage_frac*100).toFixed(1)+'%') +
+    mechRow('Max wheel speed','ω_max', (omega_max*60/(2*Math.PI)).toFixed(1)+' RPM equiv.') +
+    mechRow('Wheel diameter','D_w', n1(D_wheel)+' mm') +
+    mechRow('Slot width','w_s', slot_w.toFixed(3)+' mm') +
+    mechRow('Driver crank radius','r', r+' mm');
+
+  var cEl = document.getElementById('g_checks');
+  if(cEl) cEl.innerHTML = '<div class="mech-checks">' +
+    mechCheck(n>=3&&n<=10, 'Slot count 3–10', 'n='+n) +
+    mechCheck(r>0, 'Crank radius > 0', 'r='+r+' mm') +
+    mechCheck(a>r, 'Centre dist > crank radius', 'a='+n2(a)+' mm') +
+    mechCheck(rp<r*0.2, 'Pin radius < 0.2r', 'r_p='+rp+' vs 0.2r='+n2(r*0.2)) +
+    mechCheck(D_wheel<400, 'Wheel dia practical', 'D_w='+n1(D_wheel)+' mm') +
+    mechCheck(engage_frac<0.5, 'Index fraction < 50%', (engage_frac*100).toFixed(1)+'% of cycle') +
+    '</div>';
+
+  drawGeneva(n, r, a, R, alpha);
+}
+
+function n1(val){ return isFinite(val)?val.toFixed(1):'—'; }
+function n2(val){ return isFinite(val)?val.toFixed(2):'—'; }
+
+function drawGeneva(n, r, a, R, alpha){
+  var svg = document.getElementById('g_svg'); if(!svg) return;
+  var W=500, H=380, cx=W/2, cy=H/2;
+  var sc = Math.min(130/Math.max(a,R,r+a), 5);
+  var as=a*sc, rs=r*sc, Rs=R*sc;
+  var cx1=cx-as/2, cx2=cx+as/2, cy1=cy, cy2=cy;
+  var out = '';
+
+  // Driver disc (crank)
+  out += '<circle cx="'+cx1+'" cy="'+cy1+'" r="'+Rs+'" fill="var(--bg-info)" fill-opacity="0.25" stroke="var(--accent)" stroke-width="1.5"/>';
+  // Pin current pos (at engagement = alpha from horizontal)
+  var px = cx1 + rs*Math.cos(alpha), py = cy1 - rs*Math.sin(alpha);
+  out += '<line x1="'+cx1+'" y1="'+cy1+'" x2="'+px+'" y2="'+py+'" stroke="var(--accent)" stroke-width="1.5"/>';
+  out += '<circle cx="'+px+'" cy="'+py+'" r="'+(v('g_pin')||4)*sc+'" fill="var(--accent)" fill-opacity="0.8"/>';
+  out += '<circle cx="'+cx1+'" cy="'+cy1+'" r="5" fill="var(--accent-dk)"/>';
+
+  // Geneva wheel (slotted)
+  var n_int = Math.max(3, Math.min(10, Math.round(n)));
+  out += '<circle cx="'+cx2+'" cy="'+cy2+'" r="'+Rs+'" fill="var(--bg3)" fill-opacity="0.8" stroke="var(--yellow-dk)" stroke-width="2"/>';
+  for(var i=0;i<n_int;i++){
+    var ang = 2*Math.PI*i/n_int - Math.PI/2;
+    var sx=cx2+Rs*Math.cos(ang), sy=cy2+Rs*Math.sin(ang);
+    var ex=cx2+(Rs+rs*0.7)*Math.cos(ang), ey=cy2+(Rs+rs*0.7)*Math.sin(ang);
+    out += '<line x1="'+cx2+'" y1="'+cy2+'" x2="'+sx.toFixed(1)+'" y2="'+sy.toFixed(1)+'" stroke="var(--yellow-dk)" stroke-width="1" opacity="0.4"/>';
+    // Slot line
+    var perpAng=ang+Math.PI/2;
+    var sw=rs*0.35;
+    out += '<line x1="'+(sx-sw*Math.cos(perpAng)).toFixed(1)+'" y1="'+(sy-sw*Math.sin(perpAng)).toFixed(1)
+         + '" x2="'+(ex-sw*Math.cos(perpAng)).toFixed(1)+'" y2="'+(ey-sw*Math.sin(perpAng)).toFixed(1)
+         + '" stroke="var(--yellow)" stroke-width="2.5" opacity="0.7"/>';
+    out += '<line x1="'+(sx+sw*Math.cos(perpAng)).toFixed(1)+'" y1="'+(sy+sw*Math.sin(perpAng)).toFixed(1)
+         + '" x2="'+(ex+sw*Math.cos(perpAng)).toFixed(1)+'" y2="'+(ey+sw*Math.sin(perpAng)).toFixed(1)
+         + '" stroke="var(--yellow)" stroke-width="2.5" opacity="0.7"/>';
+  }
+  out += '<circle cx="'+cx2+'" cy="'+cy2+'" r="6" fill="var(--yellow-dk)"/>';
+
+  // Centre-distance dimension
+  out += '<line x1="'+cx1+'" y1="'+(cy1+Rs+18)+'" x2="'+cx2+'" y2="'+(cy2+Rs+18)+'" stroke="var(--txt3)" stroke-width="0.5"/>';
+  out += '<text x="'+cx+'" y="'+(cy1+Rs+32)+'" text-anchor="middle" font-size="10" fill="var(--txt3)" font-family="sans-serif">a = '+n2(a)+' mm</text>';
+
+  // Labels
+  out += '<text x="'+cx1+'" y="'+(cy1-Rs-12)+'" text-anchor="middle" font-size="11" font-weight="500" fill="var(--txt-info)" font-family="sans-serif">Driver (crank)</text>';
+  out += '<text x="'+cx2+'" y="'+(cy2-Rs-12)+'" text-anchor="middle" font-size="11" font-weight="500" fill="var(--yellow-dk)" font-family="sans-serif">Geneva Wheel ('+n_int+' slots)</text>';
+
+  svg.innerHTML = out;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6.2 BARREL CAM INDEXER
+══════════════════════════════════════════════════════════════ */
+function calcCam(){
+  var W=+document.getElementById('c_W').value||80;
+  var N=+document.getElementById('c_N').value||6;
+  var theta=+document.getElementById('c_theta').value||60;
+  var phi=+document.getElementById('c_phi').value||300;
+  var nn=+document.getElementById('c_rpm').value||30;
+  var SF=+document.getElementById('c_sf').value||2;
+  var Rv=+document.getElementById('c_R').value||150;
+  var dr=+document.getElementById('c_dr').value||20;
+  var ds=+document.getElementById('c_ds').value||40;
+  var mu=+document.getElementById('c_mu').value||0.05;
+  var E=(+document.getElementById('c_E').value||210)*1000; // MPa
+  var sc=+document.getElementById('c_sc').value||800;
+  var sb=+document.getElementById('c_sb').value||250;
+  var tau_a=+document.getElementById('c_tau').value||120;
+
+  var g=9.81, Wn=W*g;
+  var t_i=(theta/360)*(60/nn);
+  var t_d=(phi/360)*(60/nn);
+  var T_c=60/nn;
+  var omega=Math.PI*nn/30;
+  var tr=theta*Math.PI/180;
+  var alpha_acc=(Math.PI*tr)/(2*t_i*t_i);
+  var pitch=2*Math.PI*Rv/N;
+  var Rm=Rv/1000; // m
+  var I=W*Rm*Rm;
+  var Ti=I*alpha_acc;
+  var Fi=Ti/Rm;
+  var Ff=mu*Wn;
+  var Fc=Fi+Ff;
+  var Fd=Fc*SF;
+  var Lc=0.8*dr;
+  var sH=0.418*Math.sqrt((Fd*E)/(dr*Lc));
+  var Mt=Fd*Rv;
+  var tau=(16*Mt)/(Math.PI*ds*ds*ds);
+  var Mb=Fd*2*ds;
+  var sB=(32*Mb)/(Math.PI*ds*ds*ds);
+  var Pb=Fd*1.2;
+  var L10=20000;
+  var Creq=SF*Pb*Math.pow(L10*60*nn/1e6,1/3);
+
+  var ok1=sH<=sc, ok2=tau<=tau_a, ok3=sB<=sb;
+  var allOk=ok1&&ok2&&ok3;
+  var failMsg = !ok1?'Contact stress σ_H='+n1(sH)+' MPa > '+sc+' MPa'
+              : !ok2?'Shear stress τ='+n1(tau)+' MPa > '+tau_a+' MPa'
+              : 'Bending stress σ_b='+n1(sB)+' MPa > '+sb+' MPa';
+
+  document.getElementById('cam-results').innerHTML =
+    camBanner(allOk, failMsg) +
+    '<div class="card" style="margin-top:8px"><div class="sec-title">Motion &amp; Timing</div>' +
+    '<div class="cam-metrics">' +
+      '<div class="mech-metric hi"><div class="mc-label">Index Time</div><div class="mc-val">'+t_i.toFixed(3)+'</div><div class="mc-unit">seconds</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Dwell Time</div><div class="mc-val">'+t_d.toFixed(3)+'</div><div class="mc-unit">seconds</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Cycle Time</div><div class="mc-val">'+T_c.toFixed(3)+'</div><div class="mc-unit">seconds</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Max ω</div><div class="mc-val">'+n2(omega)+'</div><div class="mc-unit">rad/s</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Peak α</div><div class="mc-val">'+n1(alpha_acc)+'</div><div class="mc-unit">rad/s²</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Station Pitch</div><div class="mc-val">'+n1(pitch)+'</div><div class="mc-unit">mm</div></div>' +
+    '</div></div>' +
+    '<div class="card" style="margin-top:8px"><div class="sec-title">Force Analysis</div>' +
+    '<div class="cam-metrics">' +
+      '<div class="mech-metric"><div class="mc-label">Weight W_n</div><div class="mc-val">'+n1(Wn)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Inertia F_i</div><div class="mc-val">'+n1(Fi)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Friction F_f</div><div class="mc-val">'+n1(Ff)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Cam Drive F_c</div><div class="mc-val">'+n1(Fc)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric hi"><div class="mc-label">Design Force ×SF</div><div class="mc-val">'+n1(Fd)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Shaft Torque</div><div class="mc-val">'+n2(Mt/1000)+'</div><div class="mc-unit">N·m</div></div>' +
+    '</div></div>' +
+    '<div class="card" style="margin-top:8px"><div class="sec-title">Stress Checks</div>' +
+    camRow('Hertz contact stress σ_H', n1(sH)+' MPa', camStatusBadge(sH,sc)) +
+    camRow('Allowable contact stress', sc+' MPa', '<span class="cam-badge-info">LIMIT</span>') +
+    camRow('Shaft shear stress τ', n1(tau)+' MPa', camStatusBadge(tau,tau_a)) +
+    camRow('Allowable shear stress', tau_a+' MPa', '<span class="cam-badge-info">LIMIT</span>') +
+    camRow('Shaft bending stress σ_b', n1(sB)+' MPa', camStatusBadge(sB,sb)) +
+    camRow('Allowable bending stress', sb+' MPa', '<span class="cam-badge-info">LIMIT</span>') +
+    '</div>' +
+    '<div class="card" style="margin-top:8px"><div class="sec-title">Bearing Selection</div>' +
+    '<div class="cam-metrics">' +
+      '<div class="mech-metric hi"><div class="mc-label">Required C</div><div class="mc-val">'+n2(Creq/1000)+'</div><div class="mc-unit">kN</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Bearing Load P_b</div><div class="mc-val">'+Math.round(Pb)+'</div><div class="mc-unit">N</div></div>' +
+      '<div class="mech-metric"><div class="mc-label">Design Life L10</div><div class="mc-val">20 000</div><div class="mc-unit">hours</div></div>' +
+    '</div></div>';
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6.3 RATCHET & PAWL
+══════════════════════════════════════════════════════════════ */
+function calcRatchet(){
+  var sf=+document.getElementById('rat_sf').value||3,
+      T=+document.getElementById('rat_torque').value||8000,
+      d=+document.getElementById('rat_d').value||120,
+      z=+document.getElementById('rat_z').value||24,
+      b=+document.getElementById('rat_b').value||20,
+      h=+document.getElementById('rat_h').value||8,
+      alpha=(+document.getElementById('rat_alpha').value||15)*Math.PI/180,
+      lp=+document.getElementById('rat_lp').value||40,
+      wp=+document.getElementById('rat_wp').value||15,
+      npawl=+document.getElementById('rat_npawl').value||1,
+      sb=+document.getElementById('rat_sb').value||280,
+      ss=+document.getElementById('rat_ss').value||160;
+
+  var p = Math.PI*d/z;
+  var Ft = 2*T/d*sf;
+  var F_pawl = Ft/npawl;
+  var sig_br = F_pawl/(b*h);
+  var tau_pawl = F_pawl/(wp*b);
+  var sig_bend = 6*F_pawl*lp/(wp*wp*b);
+  var mu = 0.15, phi_f = Math.atan(mu);
+  var noSlip = alpha <= phi_f;
+  var backlash_deg = 360/(z*npawl);
+  var fos = Math.min(sb/sig_br, ss/tau_pawl, sb/sig_bend);
+
+  var checks = [
+    {name:'Bearing stress on tooth', req:'≤'+sb+' MPa', actual:n(sig_br)+' MPa', ok:sig_br<=sb},
+    {name:'Shear stress on pawl',    req:'≤'+ss+' MPa', actual:n(tau_pawl)+' MPa', ok:tau_pawl<=ss},
+    {name:'Bending stress (pawl)',   req:'≤'+sb+' MPa', actual:n(sig_bend)+' MPa', ok:sig_bend<=sb},
+    {name:'No-slip condition α<φ',   req:'α < '+n(phi_f*180/Math.PI,1)+'°', actual:'α='+n(alpha*180/Math.PI,1)+'°', ok:alpha<=phi_f},
+    {name:'Tooth height h vs pitch', req:n(p/3,1)+'–'+n(p/2,1)+' mm', actual:h+' mm', ok:h>=p/3&&h<=p/2},
+    {name:'Factor of Safety (FOS)',  req:'≥ 2.0 (impact)', actual:n(fos), ok:fos>=2.0}
+  ];
+
+  var rEl = document.getElementById('rat-results');
+  var phEl = document.getElementById('rat-placeholder');
+  if(rEl){
+    rEl.style.display = 'block';
+    if(phEl) phEl.style.display = 'none';
+
+    // Metrics card
+    var mEl = document.getElementById('rat-metrics');
+    if(mEl) mEl.innerHTML =
+      '<div class="card" style="margin-bottom:10px"><div class="sec-title">Key Results</div>'
+      + '<div class="mech-metrics">'
+      + [{name:'Tooth Pitch p',       val:n(p,2),        unit:'mm'},
+         {name:'Design Force F_t',    val:n(Ft,1),       unit:'N'},
+         {name:'Force / Pawl',        val:n(F_pawl,1),   unit:'N'},
+         {name:'Bearing Stress',      val:n(sig_br,2),   unit:'MPa'},
+         {name:'Shear Stress (pawl)', val:n(tau_pawl,2), unit:'MPa'},
+         {name:'Bending Stress',      val:n(sig_bend,2), unit:'MPa'},
+         {name:'Backlash',            val:n(backlash_deg,2), unit:'°'},
+         {name:'Self-locking',        val:noSlip?'Yes ✓':'No', unit:''},
+         {name:'FOS',                 val:n(fos,2),      unit:''}
+        ].map(function(it){
+          return '<div class="mech-metric"><div class="mc-label">'+it.name+'</div>'
+               + '<div class="mc-val">'+it.val+'</div><div class="mc-unit">'+it.unit+'</div></div>';
+        }).join('')
+      + '</div></div>';
+
+    // Checks card
+    var cEl = document.getElementById('rat-checks');
+    if(cEl) cEl.innerHTML =
+      '<div class="card" style="margin-bottom:10px"><div class="sec-title">Design Checks</div>'
+      + '<table class="rat-table"><thead><tr>'
+      + '<th>Check</th><th>Limit</th><th>Actual</th><th>Status</th></tr></thead><tbody>'
+      + checks.map(function(c){
+          return '<tr><td>'+c.name+'</td><td>'+c.req+'</td><td>'+c.actual+'</td>'
+               + '<td class="'+(c.ok?'rat-pass':'rat-fail')+'">'+(c.ok?'✓ Pass':'✗ Fail')+'</td></tr>';
+        }).join('')
+      + '</tbody></table></div>';
+
+    // Status banner
+    var sEl = document.getElementById('rat-status');
+    if(sEl){
+      var allOk2 = checks.every(function(c){ return c.ok; });
+      sEl.innerHTML = '<div class="mech-banner '+(allOk2?'ok':'fail')+'">'
+        + (allOk2 ? '✓ All stress and geometry checks passed'
+                  : '✗ Design requires review — see failed checks above') + '</div>';
+    }
+  }
+}
+
 window.onload=function(){
   var fns=[calcSpur,calcHelical,calcHerringbone,calcInternal,calcPlanetary,
     calcStraightBevel,calcSpiralBevel,calcMiter,calcZerol,
@@ -2896,8 +3999,421 @@ window.onload=function(){
     calcRack,calcFaceGear,calcScrewGear,
     calcNonCircular,calcCycloidal,calcHarmonic];
   fns.forEach(function(fn){try{fn();}catch(e){console.warn(fn.name,e);}});
+  // Section 6 — mechanisms
+  [calcGeneva, calcCam, calcRatchet].forEach(function(fn){try{fn();}catch(e){console.warn(fn.name,e);}});
+  var stressFns=[calcSpurStress,calcHelicalStress,calcHerringboneStress,calcInternalStress,
+    calcPlanetaryStress,calcStraightBevelStress,calcSpiralBevelStress,calcMiterStress,
+    calcZerolStress,calcWormStress,calcHypoidStress,calcCrossedHelicalStress,calcSpiroidStress,
+    calcRackStress,calcFaceGearStress,calcScrewGearStress,calcNonCircularStress,
+    calcCycloidalStress,calcHarmonicStress];
+  stressFns.forEach(function(fn){try{fn();}catch(e){console.warn(fn.name,e);}});
 };
 </script>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 6 SHARED STYLES
+════════════════════════════════════════════════════════════════ -->
+<style>
+/* ── Geneva layout ── */
+.mech-layout { display:grid; grid-template-columns:1fr 1.4fr; gap:14px; }
+@media(max-width:700px){ .mech-layout{grid-template-columns:1fr;} }
+
+/* ── Shared input panel ── */
+.mech-panel { display:flex; flex-direction:column; gap:10px; }
+.field-row   { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+/* ── Diagram tab system ── */
+.dtab-bar  { display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap; }
+.dtab      { padding:5px 13px; border-radius:var(--radius-sm); border:0.5px solid var(--border);
+             background:transparent; color:var(--txt2); font-size:12px; cursor:pointer;
+             transition:background 0.15s,color 0.15s; }
+.dtab:hover{ background:var(--bg3); color:var(--txt); }
+.dtab.active{ background:var(--bg-info); color:var(--txt-info); border-color:transparent; font-weight:500; }
+.dtab-panel { display:none; }
+.dtab-panel.active { display:block; }
+
+/* ── Results metric grid ── */
+.mech-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px; }
+@media(max-width:500px){ .mech-metrics{grid-template-columns:1fr 1fr;} }
+.mech-metric   { background:var(--bg3); border-radius:var(--radius-sm); padding:9px 11px; }
+.mech-metric.hi{ background:var(--bg-info); }
+.mech-metric .mc-label{ font-size:10px; color:var(--txt2); text-transform:uppercase; letter-spacing:0.04em; margin-bottom:3px; }
+.mech-metric .mc-val  { font-size:15px; font-weight:500; color:var(--txt); }
+.mech-metric.hi .mc-val{ color:var(--txt-info); }
+.mech-metric .mc-unit { font-size:10px; color:var(--txt3); }
+
+/* ── Results table ── */
+.mech-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:8px; }
+.mech-table th{ text-align:left; padding:5px 8px; background:var(--bg3);
+                color:var(--txt3); font-weight:500; font-size:11px;
+                text-transform:uppercase; letter-spacing:0.05em; border-bottom:0.5px solid var(--border); }
+.mech-table td{ padding:5px 8px; border-bottom:0.5px solid var(--border2); color:var(--txt); }
+.mech-table tr:last-child td{ border-bottom:none; }
+.mech-table td:first-child{ color:var(--txt2); }
+.mech-table td:nth-child(2){ font-family:'Courier New',monospace; color:var(--txt-info); }
+
+/* ── Check rows ── */
+.mech-checks { margin-top:8px; }
+.mech-check  { display:flex; justify-content:space-between; align-items:center;
+               padding:5px 0; border-bottom:0.5px solid var(--border2); font-size:12px; }
+.mech-check:last-child{ border-bottom:none; }
+.mech-check .ck-label{ color:var(--txt2); }
+.mech-check .ck-pass { color:var(--txt-ok);  font-weight:500; }
+.mech-check .ck-fail { color:var(--txt-warn); font-weight:500; }
+
+/* ── Status banner ── */
+.mech-banner { margin-top:10px; padding:8px 12px; border-radius:var(--radius-sm);
+               font-size:12px; font-weight:500; display:flex; align-items:center; gap:6px; }
+.mech-banner.ok   { background:var(--bg-ok);   color:var(--txt-ok); }
+.mech-banner.fail { background:var(--bg-warn);  color:var(--txt-warn); }
+
+/* ── Cam-specific metric grid (wider) ── */
+.cam-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:8px; }
+@media(max-width:500px){ .cam-metrics{grid-template-columns:1fr 1fr;} }
+.cam-result-row { display:flex; justify-content:space-between; align-items:center;
+                  padding:5px 0; border-bottom:0.5px solid var(--border2); font-size:12px; }
+.cam-result-row:last-child{ border-bottom:none; }
+.cam-result-row .rk{ color:var(--txt2); }
+.cam-result-row .rv{ font-weight:500; color:var(--txt); }
+.cam-badge-ok   { background:var(--bg-ok);   color:var(--txt-ok);   padding:2px 7px; border-radius:4px; font-size:11px; font-weight:600; }
+.cam-badge-fail { background:var(--bg-warn);  color:var(--txt-warn); padding:2px 7px; border-radius:4px; font-size:11px; font-weight:600; }
+.cam-badge-info { background:var(--bg-info);  color:var(--txt-info); padding:2px 7px; border-radius:4px; font-size:11px; font-weight:600; }
+.cam-placeholder { padding:2rem; text-align:center; color:var(--txt3); font-size:13px; background:var(--bg3); border-radius:var(--radius); }
+
+/* ── Ratchet check table ── */
+.rat-table { width:100%; border-collapse:collapse; font-size:12px; margin-top:10px; }
+.rat-table th{ background:var(--bg3); color:var(--txt3); font-size:11px; text-transform:uppercase;
+               letter-spacing:0.05em; padding:5px 8px; text-align:left;
+               border-bottom:0.5px solid var(--border); font-weight:500; }
+.rat-table td{ padding:5px 8px; border-bottom:0.5px solid var(--border2); font-size:12px; color:var(--txt); }
+.rat-table tr:last-child td{ border-bottom:none; }
+.rat-pass{ color:var(--txt-ok);  font-weight:500; }
+.rat-fail{ color:var(--txt-warn); font-weight:500; }
+
+/* ── Notes grid ── */
+.notes-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media(max-width:600px){ .notes-grid{grid-template-columns:1fr;} }
+</style>
+
+<!-- ══════════════════════════════════════════════════════════════
+     6.1 GENEVA MECHANISM
+════════════════════════════════════════════════════════════════ -->
+<div id="pane-geneva" class="calc-pane">
+  <div class="desc-box"><strong>Geneva Mechanism</strong> — Intermittent motion drive — converts continuous rotation into precise indexed steps. Used in watches, film projectors, and automated machinery.</div>
+
+  <div class="mech-layout">
+    <!-- LEFT: Inputs + Checks -->
+    <div class="mech-panel">
+      <div class="card">
+        <div class="sec-title">Driver Parameters</div>
+        <div class="field"><label>No. of Slots n (3–10)</label><input type="number" id="g_slots" value="4" min="3" max="10" oninput="calcGeneva()"></div>
+        <div class="field-row" style="margin-top:8px">
+          <div class="field"><label>Crank Radius r (mm)</label><input type="number" id="g_r" value="30" min="5" oninput="calcGeneva()"></div>
+          <div class="field"><label>Driver RPM</label><input type="number" id="g_rpm" value="60" min="1" oninput="calcGeneva()"></div>
+        </div>
+        <div class="field-row" style="margin-top:8px">
+          <div class="field"><label>Pin Radius r_p (mm)</label><input type="number" id="g_pin" value="4" min="1" oninput="calcGeneva()"></div>
+          <div class="field"><label>Service Factor Ks</label>
+            <select id="g_ks" onchange="calcGeneva()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+              <option value="1.0">1.0 — Uniform</option>
+              <option value="1.25" selected>1.25 — Light shock</option>
+              <option value="1.5">1.5 — Moderate shock</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" style="margin-top:8px"><label>Wheel Material</label>
+          <select id="g_mat" onchange="calcGeneva()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+            <option value="200">C45 Steel — σ_b 200 MPa</option>
+            <option value="260" selected>40Cr1 Alloy — σ_b 260 MPa</option>
+            <option value="320">Case Hardened — σ_b 320 MPa</option>
+          </select>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Design Checks</div>
+        <div id="g_checks"><div style="color:var(--txt3);font-size:12px">— waiting for input —</div></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Tabs -->
+    <div>
+      <div class="dtab-bar">
+        <button class="dtab active" onclick="showDtab('geneva','results',this)">Results</button>
+        <button class="dtab" onclick="showDtab('geneva','diagram',this)">Diagram</button>
+        <button class="dtab" onclick="showDtab('geneva','formulas',this)">Formulas</button>
+        <button class="dtab" onclick="showDtab('geneva','notes',this)">Notes</button>
+      </div>
+      <div id="dtab-geneva-results" class="dtab-panel active">
+        <div class="mech-metrics" id="g_metrics"></div>
+        <div class="card" style="padding:0.75rem 1rem">
+          <table class="mech-table"><thead><tr><th>Parameter</th><th>Symbol</th><th>Value</th></tr></thead><tbody id="g_table"></tbody></table>
+        </div>
+      </div>
+      <div id="dtab-geneva-diagram" class="dtab-panel">
+        <div class="card" style="text-align:center;padding:0.75rem">
+          <svg id="g_svg" width="100%" viewBox="0 0 500 380" style="max-height:380px"></svg>
+        </div>
+      </div>
+      <div id="dtab-geneva-formulas" class="dtab-panel">
+        <div class="card">
+          <div class="fbox">1. Centre distance      a  = r / sin(π/n)
+2. Lock radius          R  = √(a² − r²)
+3. Slot depth       d_slot = R + r_pin + 0.5mm clearance
+4. Engagement angle     α  = π/2 − π/n        [rad]
+5. Index angle/cycle    θ  = 360°/n
+6. Dwell angle      β_dwl  = 360° − 2α·(180/π)
+7. Index time           t_i = (2α/2π) × (60/RPM)
+8. Dwell time           t_d = (1 − 2α/2π) × (60/RPM)
+9. Max wheel ω     ω_max  = ω·r·a·cos(α) / (a²+r²−2ar·cos α)
+10. Wheel diameter    D_w  = 2·(R + r_pin + 2mm)</div>
+          <div class="fnote">Entry condition: a·sin(α) = r (crank ⊥ slot at engagement). Minimum n=3 (120° index). Locking disc prevents reverse during dwell.</div>
+        </div>
+      </div>
+      <div id="dtab-geneva-notes" class="dtab-panel">
+        <div class="notes-grid">
+          <div class="desc-box"><strong>Slot Count:</strong> Minimum n=3 (120° index), most common n=4 (90°). Higher n gives finer indexing but longer dwell ratio.</div>
+          <div class="desc-box"><strong>Entry Condition:</strong> Pin must enter slot tangentially — crank and slot centreline must be perpendicular at entry. This is guaranteed by the geometry: a·sin(α) = r.</div>
+          <div class="desc-box"><strong>Locking Disc:</strong> A concentric locking disc on the driver engages a circular lock on the wheel during dwell. Clearance ≈ 0.05–0.1 mm.</div>
+          <div class="ok-badge"><strong>Shock Loading:</strong> Geneva mechanisms produce jerk at entry/exit. Use hardened pins (60 HRC). Service factor Ks ≥ 1.25 recommended.</div>
+          <div class="desc-box"><strong>Pin Diameter:</strong> Typically d_pin = 0.1·a to 0.15·a. Slot width = d_pin + 0.05 mm clearance.</div>
+          <div class="desc-box"><strong>IS 9001 Application:</strong> Geneva mechanisms are used as index drives in automatic machinery, film projectors, and rotary tables.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     6.2 BARREL CAM INDEXER
+════════════════════════════════════════════════════════════════ -->
+<div id="pane-cam" class="calc-pane">
+  <div class="desc-box"><strong>Barrel Cam Indexer</strong> — Modified sine motion barrel cam with roller follower for precision station indexing. Widely used in assembly automation and packaging machinery.</div>
+
+  <div class="mech-layout">
+    <!-- LEFT: Inputs -->
+    <div class="mech-panel">
+      <div class="card">
+        <div class="sec-title">Load &amp; Motion</div>
+        <div class="g2">
+          <div class="field"><label>Total Load W [kg]</label><input id="c_W" type="number" value="80" min="1" oninput="calcCam()"></div>
+          <div class="field"><label>Stations N</label>
+            <select id="c_N" onchange="calcCam()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+              <option>2</option><option>3</option><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option>
+            </select>
+          </div>
+          <div class="field"><label>Index Angle θ [°]</label><input id="c_theta" type="number" value="60" min="10" max="300" oninput="calcCam()"></div>
+          <div class="field"><label>Dwell Angle φ [°]</label><input id="c_phi" type="number" value="300" min="60" max="350" oninput="calcCam()"></div>
+          <div class="field"><label>Input Speed n [RPM]</label><input id="c_rpm" type="number" value="30" min="1" max="500" oninput="calcCam()"></div>
+          <div class="field"><label>Safety Factor SF</label><input id="c_sf" type="number" value="2" min="1.2" max="5" step="0.1" oninput="calcCam()"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Geometry</div>
+        <div class="g2">
+          <div class="field"><label>Pitch Radius R [mm]</label><input id="c_R" type="number" value="150" min="30" oninput="calcCam()"></div>
+          <div class="field"><label>Roller Dia. d_r [mm]</label><input id="c_dr" type="number" value="20" min="5" oninput="calcCam()"></div>
+          <div class="field"><label>Shaft Dia. d_s [mm]</label><input id="c_ds" type="number" value="40" min="10" oninput="calcCam()"></div>
+          <div class="field"><label>Friction Coeff. μ</label><input id="c_mu" type="number" value="0.05" min="0.01" max="0.3" step="0.01" oninput="calcCam()"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-title">Material &amp; Allowables</div>
+        <div class="field"><label>Cam Material</label>
+          <select id="c_mat" onchange="calcCam()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+            <option value="700">Alloy Steel — σ_u 700 MPa</option>
+            <option value="900">Case Hardened — σ_u 900 MPa</option>
+            <option value="500">Med. Carbon Steel — σ_u 500 MPa</option>
+            <option value="350">Cast Iron — σ_u 350 MPa</option>
+          </select>
+        </div>
+        <div class="g2" style="margin-top:8px">
+          <div class="field"><label>Allow. Contact Stress [MPa]</label><input id="c_sc" type="number" value="800" oninput="calcCam()"></div>
+          <div class="field"><label>Allow. Shear Stress [MPa]</label><input id="c_tau" type="number" value="120" oninput="calcCam()"></div>
+          <div class="field"><label>Allow. Bending [MPa]</label><input id="c_sb" type="number" value="250" oninput="calcCam()"></div>
+          <div class="field"><label>Elastic Modulus E [GPa]</label><input id="c_E" type="number" value="210" oninput="calcCam()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results + Diagram -->
+    <div class="mech-panel">
+      <div id="cam-results">
+        <div class="cam-placeholder">Fill in parameters — results update live</div>
+      </div>
+      <div class="card" style="margin-top:10px">
+        <div class="sec-title" style="margin-bottom:10px">Schematic — Barrel Cam Indexer</div>
+        <svg width="100%" viewBox="0 0 440 280" style="display:block">
+          <defs>
+            <marker id="ca2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M2 1L8 5L2 9" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+          </defs>
+          <!-- Housing -->
+          <rect x="30" y="15" width="240" height="240" rx="8" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text x="150" y="11" text-anchor="middle" font-size="9" fill="var(--txt3)" font-family="sans-serif">HOUSING</text>
+          <!-- Turret plate -->
+          <ellipse cx="150" cy="110" rx="95" ry="22" fill="var(--bg-info)" fill-opacity="0.3" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="150" y="107" text-anchor="middle" font-size="10" font-weight="500" fill="var(--txt-info)" font-family="sans-serif">TURRET PLATE</text>
+          <text x="150" y="120" text-anchor="middle" font-size="8" fill="var(--txt3)" font-family="sans-serif">PITCH RADIUS R</text>
+          <!-- Cam barrel -->
+          <rect x="110" y="155" width="80" height="55" rx="6" fill="var(--bg3)" stroke="var(--accent-dk)" stroke-width="1.5" fill-opacity="0.6"/>
+          <ellipse cx="150" cy="210" rx="40" ry="11" fill="var(--bg3)" stroke="var(--accent-dk)" stroke-width="1" fill-opacity="0.5"/>
+          <text x="150" y="180" text-anchor="middle" font-size="10" font-weight="500" fill="var(--txt)" font-family="sans-serif">BARREL CAM</text>
+          <text x="150" y="193" text-anchor="middle" font-size="8" fill="var(--txt3)" font-family="sans-serif">CAM GROOVE</text>
+          <!-- Input shaft -->
+          <rect x="141" y="215" width="18" height="34" rx="2" fill="var(--bg3)" stroke="var(--accent-dk)" stroke-width="1"/>
+          <!-- Output shaft -->
+          <rect x="141" y="44" width="18" height="60" rx="2" fill="var(--bg3)" stroke="var(--accent)" stroke-width="1"/>
+          <!-- Rollers -->
+          <circle cx="55" cy="110" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <circle cx="245" cy="110" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <circle cx="83" cy="90" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <circle cx="217" cy="90" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <circle cx="83" cy="130" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <circle cx="217" cy="130" r="8" fill="var(--bg-ok)" fill-opacity="0.4" stroke="var(--green)" stroke-width="1.5"/>
+          <!-- R dimension line -->
+          <line x1="150" y1="110" x2="245" y2="110" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3 3"/>
+          <text x="200" y="106" text-anchor="middle" font-size="8" fill="var(--txt3)" font-family="sans-serif">R</text>
+          <!-- Right-side labels -->
+          <line x1="253" y1="110" x2="295" y2="80" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3 2"/>
+          <text x="298" y="78" font-size="9" fill="var(--txt2)" font-family="sans-serif">Roller</text>
+          <line x1="190" y1="172" x2="295" y2="148" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3 2"/>
+          <text x="298" y="146" font-size="9" fill="var(--txt2)" font-family="sans-serif">Cam groove</text>
+          <line x1="159" y1="232" x2="295" y2="218" stroke="var(--border)" stroke-width="0.5" stroke-dasharray="3 2"/>
+          <text x="298" y="216" font-size="9" fill="var(--txt2)" font-family="sans-serif">Input shaft</text>
+          <!-- Arrows -->
+          <path d="M150 258 L150 248" fill="none" stroke="var(--accent-dk)" stroke-width="1.5" marker-end="url(#ca2)"/>
+          <text x="150" y="268" text-anchor="middle" font-size="8" fill="var(--txt-info)" font-family="sans-serif">ROTARY IN</text>
+          <path d="M40 93 L40 65" fill="none" stroke="var(--accent)" stroke-width="1.5" marker-end="url(#ca2)"/>
+          <text x="20" y="56" font-size="8" fill="var(--txt-info)" font-family="sans-serif">INDEX</text>
+          <text x="20" y="66" font-size="8" fill="var(--txt-info)" font-family="sans-serif">OUT</text>
+          <!-- Dwell arc -->
+          <path d="M126 208 A24 9 0 0 1 174 208" fill="none" stroke="var(--yellow)" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="150" y="228" text-anchor="middle" font-size="8" fill="var(--yellow-dk)" font-family="sans-serif">φ DWELL</text>
+        </svg>
+      </div>
+      <div class="card" style="margin-top:10px">
+        <div class="sec-title">Design Formulas</div>
+        <div class="fbox">t_index  = (θ/360) × (60/n)      [s]
+t_dwell  = (φ/360) × (60/n)      [s]
+α_peak   = π·θ_rad / (2·t_i²)   [rad/s²]
+F_inertia = I·α,   I = W·(R/1000)²
+F_cam    = F_i + μ·W·g           [N]
+σ_H      = 0.418√(F_d·E/(d_r·L)) [MPa]
+τ_shaft  = 16·M_t / (π·d_s³)    [MPa]
+C_bearing = SF·P·(L10·n·60/10⁶)^(1/3)</div>
+        <div class="fnote">⚠ IS 9001: Use modified sine motion — never simple harmonic above 30 RPM. Case-harden cam surface HRC 58–62.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     6.3 RATCHET &amp; PAWL
+════════════════════════════════════════════════════════════════ -->
+<div id="pane-ratchet" class="calc-pane">
+  <div class="desc-box"><strong>Ratchet &amp; Pawl</strong> — Unidirectional intermittent motion mechanism with anti-reverse capability. Used in wrenches, winches, and escapement mechanisms.</div>
+
+  <div class="tab-row">
+    <button class="tab on" onclick="stabM(this,'rat-calc')">Calculator</button>
+    <button class="tab" onclick="stabM(this,'rat-form')">Formulas</button>
+    <button class="tab" onclick="stabM(this,'rat-notes')">Notes</button>
+  </div>
+
+  <!-- Calculator tab -->
+  <div id="rat-calc">
+    <div class="g2" style="gap:10px">
+      <!-- Left column -->
+      <div>
+        <div class="card">
+          <div class="sec-title">Load &amp; Operation</div>
+          <div class="g2">
+            <div class="field"><label>Input Torque T (N·mm)</label><input type="number" id="rat_torque" value="8000" oninput="calcRatchet()"></div>
+            <div class="field"><label>Safety Factor SF</label><input type="number" id="rat_sf" value="3.0" step="0.1" oninput="calcRatchet()"></div>
+            <div class="field"><label>Operating Mode</label>
+              <select id="rat_mode" onchange="calcRatchet()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+                <option value="driving">Driving Ratchet</option>
+                <option value="holding">Holding Ratchet</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="sec-title">Ratchet Wheel Geometry</div>
+          <div class="g2">
+            <div class="field"><label>Pitch Diameter d (mm)</label><input type="number" id="rat_d" value="120" oninput="calcRatchet()"></div>
+            <div class="field"><label>Number of Teeth Z</label><input type="number" id="rat_z" value="24" oninput="calcRatchet()"></div>
+            <div class="field"><label>Face Width b (mm)</label><input type="number" id="rat_b" value="20" oninput="calcRatchet()"></div>
+            <div class="field"><label>Tooth Height h (mm)</label><input type="number" id="rat_h" value="8" oninput="calcRatchet()"></div>
+            <div class="field"><label>Ratchet Angle α (°)</label><input type="number" id="rat_alpha" value="15" step="5" min="10" max="30" oninput="calcRatchet()"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="sec-title">Pawl Geometry</div>
+          <div class="g2">
+            <div class="field"><label>Pawl Length l_p (mm)</label><input type="number" id="rat_lp" value="40" oninput="calcRatchet()"></div>
+            <div class="field"><label>Pawl Width w_p (mm)</label><input type="number" id="rat_wp" value="15" oninput="calcRatchet()"></div>
+            <div class="field"><label>Number of Pawls</label><input type="number" id="rat_npawl" value="1" min="1" max="4" oninput="calcRatchet()"></div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:10px">
+          <div class="sec-title">Material</div>
+          <div class="g3">
+            <div class="field"><label>Material</label>
+              <select id="rat_mat" onchange="fillRatMat()" style="width:100%;padding:7px 9px;border:0.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg3);color:var(--txt);font-size:13px;outline:none;">
+                <option value="c45">C45 Steel</option>
+                <option value="en8">EN8 Steel</option>
+                <option value="en36" selected>EN36 Steel</option>
+              </select>
+            </div>
+            <div class="field"><label>Allow. Bearing Stress (MPa)</label><input type="number" id="rat_sb" value="280" oninput="calcRatchet()"></div>
+            <div class="field"><label>Allow. Shear Stress (MPa)</label><input type="number" id="rat_ss" value="160" oninput="calcRatchet()"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Right column: live results -->
+      <div>
+        <div id="rat-results" style="display:none">
+          <div id="rat-metrics"></div>
+          <div id="rat-checks"></div>
+          <div id="rat-status"></div>
+        </div>
+        <div id="rat-placeholder" class="cam-placeholder">Results appear here automatically</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Formulas tab -->
+  <div id="rat-form" style="display:none">
+    <div class="card">
+      <div class="sec-title">Ratchet &amp; Pawl Equations</div>
+      <div class="fbox">Tooth Pitch:          p  = π × d / Z
+Tangential Force:     F_t = 2T / d  (× SF for design)
+Force per Pawl:       F_p = F_t / n_pawls
+Tooth Bearing Stress: σ_br = F_p / (b × h)       ≤ σ_allow_bearing
+Pawl Shear Stress:    τ   = F_p / (w_p × b)      ≤ τ_allow
+Pawl Bending Stress:  σ_b = 6×F_p×l_p / (w_p²×b) ≤ σ_allow_bend
+Backlash:             δ   = 360° / (Z × n_pawls)
+No-slip condition:    α   &lt; arctan(μ)     [μ ≈ 0.15 dry steel]
+Factor of Safety:     FOS = min(σ_allow/σ_act, τ_allow/τ_act)</div>
+      <div class="fnote">Ratchet angle α = 10°–30°. Self-locking requires α &lt; friction angle φ = arctan(μ). For μ=0.15, φ ≈ 8.5° — most ratchet teeth are not self-locking by friction alone; the pawl spring provides engagement force.</div>
+    </div>
+  </div>
+
+  <!-- Notes tab -->
+  <div id="rat-notes" style="display:none">
+    <div class="notes-grid">
+      <div class="desc-box"><strong>Ratchet Angle:</strong> α = 10°–30°. Smaller angle provides finer indexing but reduces tooth strength. 15° is typical for general-purpose ratchets.</div>
+      <div class="desc-box"><strong>No Back-Slip:</strong> α must be less than friction angle φ = arctan(μ). For μ=0.15, φ≈8.5°. Most ratchets rely on spring-loaded pawl engagement, not geometry alone.</div>
+      <div class="desc-box"><strong>Multiple Pawls:</strong> Reduce angular backlash. 2 pawls at 180° offset: backlash = 360°/2Z. 3 pawls at 120° offset: backlash = 360°/3Z.</div>
+      <div class="desc-box"><strong>Pawl Spring:</strong> Must provide adequate engagement force but not cause excessive noise at high speed. Typical spring force = 5–15% of tangential tooth force.</div>
+      <div class="ok-badge"><strong>Surface Treatment:</strong> Use hardened pawl tip (58–62 HRC) to resist impact loading on each engagement cycle.</div>
+      <div class="desc-box"><strong>Tooth Height:</strong> h ≈ p/2.5 is standard. Larger h increases strength but reduces tooth count for a given diameter.</div>
+      <div class="warn-badge"><strong>SF ≥ 3.0:</strong> Use for ratchets due to the impact nature of loading on each engagement cycle.</div>
+      <div class="desc-box"><strong>Contact Stress:</strong> Check pawl tip for Hertz contact stress at the ratchet tooth flank contact point using cylindrical contact formula.</div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════
      FOOTER — License & Credits
@@ -3027,6 +4543,12 @@ window.onload=function(){
             <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
           </svg>
           Shashank S. Jingade
+        </a>
+        <a href="https://shashanksjingade7.github.io/Portfolio_shashank/" target="_blank" rel="noopener noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+          Portfolio
         </a>
       </div>
     </div>
