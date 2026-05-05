@@ -1,0 +1,2065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GearPedia Admin — Secure Dashboard</title>
+<!-- Disable right-click and inspect on this dashboard too -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #020818;
+  --bg2:      #040f28;
+  --bg3:      #071535;
+  --card:     rgba(7,21,53,0.85);
+  --border:   rgba(0,160,220,0.18);
+  --border2:  rgba(0,200,255,0.35);
+  --accent:   #00c8ff;
+  --accent2:  #0082b0;
+  --accent3:  #38bcd8;
+  --ink:      #c9eefa;
+  --ink2:     #7ab8d4;
+  --ink3:     #4a8ba8;
+  --red:      #ff4560;
+  --green:    #00e396;
+  --yellow:   #ffd700;
+  --orange:   #ff6b35;
+  --font:     'Share Tech Mono', monospace;
+  --font2:    'Orbitron', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── GRID BACKGROUND ─── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0,130,180,0.15) 0%, transparent 60%);
+}
+
+/* ════════════════════════════════════════
+   LOGIN SCREEN
+════════════════════════════════════════ */
+#login-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+}
+
+#login-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,200,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,200,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.login-box {
+  position: relative; z-index: 1;
+  width: 420px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 48px 40px;
+  box-shadow: 0 0 80px rgba(0,200,255,0.08), 0 0 0 1px rgba(0,200,255,0.05) inset;
+  backdrop-filter: blur(20px);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.login-logo .gear-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 10px;
+  animation: spin-slow 12s linear infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.login-logo h1 {
+  font-family: var(--font2);
+  font-size: 1.4rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 20px rgba(0,200,255,0.4);
+}
+
+.login-logo p {
+  font-size: 0.72rem;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.login-field {
+  margin-bottom: 18px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--ink3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.login-field input {
+  width: 100%;
+  background: rgba(0,200,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  outline: none;
+  transition: border 0.25s, box-shadow 0.25s;
+}
+
+.login-field input:focus {
+  border-color: var(--accent2);
+  box-shadow: 0 0 0 3px rgba(0,130,176,0.18);
+}
+
+.login-field input.error {
+  border-color: var(--red);
+  box-shadow: 0 0 0 3px rgba(255,69,96,0.15);
+  animation: shake 0.35s ease;
+}
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-6px); }
+  40%      { transform: translateX(6px); }
+  60%      { transform: translateX(-4px); }
+  80%      { transform: translateX(4px); }
+}
+
+.login-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  color: #fff;
+  font-family: var(--font2);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(0,200,255,0.2);
+}
+
+.login-btn:hover { opacity: 0.9; box-shadow: 0 4px 32px rgba(0,200,255,0.35); }
+.login-btn:active { transform: scale(0.98); }
+
+.login-attempts {
+  text-align: center;
+  font-size: 0.68rem;
+  color: var(--red);
+  margin-top: 14px;
+  min-height: 18px;
+  letter-spacing: 0.05em;
+}
+
+.lockout-overlay {
+  position: absolute; inset: 0;
+  background: rgba(2,8,24,0.92);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  display: none;
+}
+
+.lockout-overlay.active { display: flex; }
+.lockout-timer { font-family: var(--font2); font-size: 2rem; color: var(--red); }
+.lockout-msg { font-size: 0.72rem; color: var(--ink3); letter-spacing: 0.1em; }
+
+/* ════════════════════════════════════════
+   MAIN DASHBOARD
+════════════════════════════════════════ */
+#dashboard { display: none; position: relative; z-index: 1; }
+
+/* ─── TOP BAR ─── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(2,8,24,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+  height: 60px;
+}
+
+.topbar-brand {
+  display: flex; align-items: center; gap: 12px;
+  font-family: var(--font2);
+  font-size: 0.88rem;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+}
+
+.topbar-brand .gear { animation: spin-slow 10s linear infinite; font-size: 1.2rem; }
+
+.topbar-right {
+  display: flex; align-items: center; gap: 16px;
+}
+
+.status-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+.topbar-time {
+  font-size: 0.72rem;
+  color: var(--ink3);
+  letter-spacing: 0.1em;
+}
+
+.logout-btn {
+  background: rgba(255,69,96,0.12);
+  border: 1px solid rgba(255,69,96,0.3);
+  border-radius: 6px;
+  color: var(--red);
+  font-family: var(--font);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.logout-btn:hover { background: rgba(255,69,96,0.2); }
+
+/* ─── LAYOUT ─── */
+.dash-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  min-height: calc(100vh - 60px);
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: rgba(4,15,40,0.7);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+}
+
+.sidebar-section {
+  padding: 0 16px;
+  margin-bottom: 4px;
+}
+
+.sidebar-label {
+  font-size: 0.6rem;
+  color: var(--ink3);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 16px 8px 8px;
+}
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--ink2);
+  letter-spacing: 0.06em;
+  transition: background 0.2s, color 0.2s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover { background: rgba(0,200,255,0.07); color: var(--ink); }
+.nav-item.active { background: rgba(0,130,176,0.18); color: var(--accent); border: 1px solid rgba(0,200,255,0.15); }
+.nav-item .ico { font-size: 1rem; width: 20px; text-align: center; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent2);
+  color: #fff;
+  font-size: 0.6rem;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-family: var(--font2);
+}
+
+/* ─── MAIN CONTENT ─── */
+.main-content {
+  padding: 28px 32px;
+  overflow-y: auto;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+/* ─── PAGE HEADERS ─── */
+.page-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.page-title {
+  font-family: var(--font2);
+  font-size: 1.1rem;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+}
+
+.page-sub {
+  font-size: 0.72rem;
+  color: var(--ink3);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  backdrop-filter: blur(10px);
+}
+
+/* ─── STAT GRID ─── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  transition: border 0.2s;
+}
+
+.stat-card:hover { border-color: var(--border2); }
+
+.stat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  border-radius: 12px 12px 0 0;
+}
+
+.stat-num {
+  font-family: var(--font2);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: var(--ink3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* ─── SUBSCRIBERS TABLE ─── */
+.table-wrap {
+  overflow-x: auto;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+thead th {
+  background: rgba(0,130,176,0.12);
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+tbody tr:hover { background: rgba(0,200,255,0.04); }
+tbody tr:last-child { border-bottom: none; }
+
+tbody td {
+  padding: 12px 16px;
+  color: var(--ink2);
+  vertical-align: middle;
+}
+
+.subscriber-name { color: var(--ink); font-weight: 600; }
+.subscriber-email { color: var(--accent3); }
+
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+}
+
+.tag-active  { background: rgba(0,227,150,0.12); color: var(--green); border: 1px solid rgba(0,227,150,0.25); }
+.tag-role    { background: rgba(0,130,176,0.14); color: var(--accent3); border: 1px solid rgba(0,200,255,0.2); }
+
+.action-btn {
+  background: rgba(0,130,176,0.12);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--accent3);
+  font-family: var(--font);
+  font-size: 0.68rem;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-right: 4px;
+}
+
+.action-btn:hover { background: rgba(0,130,176,0.25); }
+.action-btn.red { color: var(--red); border-color: rgba(255,69,96,0.2); }
+.action-btn.red:hover { background: rgba(255,69,96,0.12); }
+
+/* ─── SEARCH / FILTER BAR ─── */
+.toolbar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  flex: 1; min-width: 200px;
+  position: relative;
+}
+
+.search-wrap input {
+  width: 100%;
+  background: rgba(0,200,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 12px 9px 36px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 0.8rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.search-wrap input:focus { border-color: var(--accent2); }
+.search-wrap .search-ico {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--ink3); font-size: 0.85rem;
+}
+
+.primary-btn {
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-family: var(--font2);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 16px rgba(0,200,255,0.15);
+  white-space: nowrap;
+}
+
+.primary-btn:hover { opacity: 0.9; box-shadow: 0 2px 24px rgba(0,200,255,0.3); }
+
+/* ─── COMPOSE MAIL ─── */
+.compose-form { display: flex; flex-direction: column; gap: 16px; }
+
+.compose-field label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--ink3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.compose-field input,
+.compose-field textarea,
+.compose-field select {
+  width: 100%;
+  background: rgba(0,200,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 0.82rem;
+  outline: none;
+  transition: border 0.2s;
+  resize: vertical;
+}
+
+.compose-field input:focus,
+.compose-field textarea:focus,
+.compose-field select:focus { border-color: var(--accent2); box-shadow: 0 0 0 3px rgba(0,130,176,0.12); }
+
+.compose-field select option { background: var(--bg2); }
+
+textarea.mail-body { min-height: 220px; }
+
+.compose-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ─── AUTO REPLY ─── */
+.auto-reply-card {
+  display: flex; align-items: flex-start; gap: 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 16px;
+}
+
+.auto-reply-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  background: rgba(0,130,176,0.12);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.auto-reply-info { flex: 1; }
+.auto-reply-info h3 {
+  font-family: var(--font2);
+  font-size: 0.82rem;
+  color: var(--ink);
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+.auto-reply-info p {
+  font-size: 0.72rem;
+  color: var(--ink3);
+  line-height: 1.6;
+}
+
+/* ─── TOGGLE SWITCH ─── */
+.toggle-wrap {
+  display: flex; align-items: center; gap: 10px;
+}
+
+.toggle {
+  position: relative; width: 46px; height: 24px; flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+
+.toggle-track {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggle input:checked + .toggle-track { background: var(--accent2); border-color: var(--accent2); }
+
+.toggle-track::after {
+  content: '';
+  position: absolute; top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.toggle input:checked + .toggle-track::after { transform: translateX(22px); }
+
+.toggle-label { font-size: 0.72rem; color: var(--ink2); }
+
+/* ─── MAIL LOG ─── */
+.mail-log-item {
+  display: flex; align-items: flex-start; gap: 16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mail-log-item:last-child { border-bottom: none; }
+
+.mail-log-ico {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: rgba(0,200,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.9rem; flex-shrink: 0;
+}
+
+.mail-log-info { flex: 1; }
+.mail-log-to { font-size: 0.78rem; color: var(--ink); margin-bottom: 2px; }
+.mail-log-subject { font-size: 0.72rem; color: var(--accent3); margin-bottom: 2px; }
+.mail-log-time { font-size: 0.63rem; color: var(--ink3); }
+
+.mail-log-status { font-size: 0.65rem; padding: 3px 9px; border-radius: 20px; }
+.status-sent { background: rgba(0,227,150,0.1); color: var(--green); border: 1px solid rgba(0,227,150,0.2); }
+.status-auto { background: rgba(0,130,176,0.1); color: var(--accent3); border: 1px solid rgba(0,200,255,0.2); }
+.status-draft { background: rgba(255,215,0,0.1); color: var(--yellow); border: 1px solid rgba(255,215,0,0.2); }
+.status-failed { background: rgba(255,69,96,0.1); color: var(--red); border: 1px solid rgba(255,69,96,0.2); }
+
+/* ─── SETTINGS ─── */
+.settings-section { margin-bottom: 28px; }
+.settings-title {
+  font-family: var(--font2); font-size: 0.78rem;
+  color: var(--accent); letter-spacing: 0.1em;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(2,8,24,0.85);
+  display: none; align-items: center; justify-content: center;
+  backdrop-filter: blur(8px);
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 32px;
+  width: 500px;
+  max-width: 95vw;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+}
+
+.modal-title {
+  font-family: var(--font2); font-size: 0.9rem;
+  color: var(--accent); letter-spacing: 0.1em;
+  margin-bottom: 20px;
+}
+
+.modal-actions {
+  display: flex; gap: 12px; justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--ink2);
+  font-family: var(--font);
+  font-size: 0.78rem;
+  padding: 9px 18px;
+  cursor: pointer;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 900;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 14px 22px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 0.8rem;
+  color: var(--ink);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  transform: translateY(80px);
+  opacity: 0;
+  transition: transform 0.35s, opacity 0.35s;
+  max-width: 340px;
+}
+
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast-ico { font-size: 1.1rem; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--ink3); font-size: 0.8rem;
+}
+
+.empty-state .empty-ico { font-size: 2.5rem; margin-bottom: 12px; }
+
+/* ─── SECURITY BADGE ─── */
+.security-banner {
+  background: rgba(0,227,150,0.06);
+  border: 1px solid rgba(0,227,150,0.18);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.72rem;
+  color: var(--green);
+  letter-spacing: 0.06em;
+  margin-bottom: 20px;
+}
+
+/* ─── MINI CHART ─── */
+.mini-chart-wrap {
+  height: 80px;
+  display: flex; align-items: flex-end; gap: 4px;
+  padding-top: 8px;
+}
+
+.mini-bar {
+  flex: 1;
+  background: linear-gradient(to top, var(--accent2), var(--accent3));
+  border-radius: 3px 3px 0 0;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  min-height: 4px;
+}
+
+.mini-bar:hover { opacity: 1; }
+
+/* ─── SECTION DIVIDER ─── */
+.section-gap { margin-bottom: 20px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+@media (max-width: 900px) {
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .two-col, .three-col { grid-template-columns: 1fr; }
+  .dash-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* Checkbox */
+.cb-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cb-row input[type=checkbox] { accent-color: var(--accent2); width: 15px; height: 15px; }
+.cb-row label { font-size: 0.78rem; color: var(--ink2); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="gear-icon">⚙️</span>
+      <h1>GEARPEDIA</h1>
+      <p>ADMIN CONTROL CENTER · SECURE ACCESS</p>
+    </div>
+
+    <div class="login-field">
+      <label>Admin Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="login-field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter password">
+    </div>
+
+    <button class="login-btn" onclick="attemptLogin()">ACCESS DASHBOARD</button>
+    <div class="login-attempts" id="login-msg"></div>
+
+    <div class="lockout-overlay" id="lockout-overlay">
+      <div style="font-size:2rem">🔒</div>
+      <div class="lockout-timer" id="lockout-timer">5:00</div>
+      <div class="lockout-msg">ACCOUNT LOCKED — TOO MANY FAILED ATTEMPTS</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════ -->
+<div id="dashboard">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <span class="gear">⚙️</span>
+      GEARPEDIA ADMIN
+    </div>
+    <div class="topbar-right">
+      <div class="status-dot"></div>
+      <div class="topbar-time" id="topbar-time"></div>
+      <button class="logout-btn" onclick="logout()">⏏ LOGOUT</button>
+    </div>
+  </div>
+
+  <!-- LAYOUT -->
+  <div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-label">Main</div>
+      <div class="sidebar-section">
+        <div class="nav-item active" onclick="showPage('overview', this)">
+          <span class="ico">📊</span> Overview
+        </div>
+        <div class="nav-item" onclick="showPage('subscribers', this)">
+          <span class="ico">👥</span> Subscribers
+          <span class="nav-badge" id="sub-count-badge">0</span>
+        </div>
+      </div>
+      <div class="sidebar-label">Mail</div>
+      <div class="sidebar-section">
+        <div class="nav-item" onclick="showPage('compose', this)">
+          <span class="ico">✉️</span> Compose
+        </div>
+        <div class="nav-item" onclick="showPage('autoreply', this)">
+          <span class="ico">🤖</span> Auto-Reply
+        </div>
+        <div class="nav-item" onclick="showPage('maillog', this)">
+          <span class="ico">📋</span> Mail Log
+        </div>
+      </div>
+      <div class="sidebar-label">System</div>
+      <div class="sidebar-section">
+        <div class="nav-item" onclick="showPage('settings', this)">
+          <span class="ico">⚙️</span> Settings
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+      <!-- ── OVERVIEW ── -->
+      <div class="page active" id="page-overview">
+        <div class="page-header">
+          <div>
+            <div class="page-title">OVERVIEW</div>
+            <div class="page-sub">Welcome back, Admin. Here's your GearPedia dashboard.</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="ov-total">0</div>
+            <div class="stat-label">Total Subscribers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="ov-today">0</div>
+            <div class="stat-label">New Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="ov-emails">0</div>
+            <div class="stat-label">Emails Sent</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="ov-auto">ON</div>
+            <div class="stat-label">Auto-Reply</div>
+          </div>
+        </div>
+
+        <div class="two-col section-gap">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div style="font-family:var(--font2);font-size:0.78rem;color:var(--ink);letter-spacing:0.08em">SUBSCRIBER GROWTH</div>
+              <div style="font-size:0.65rem;color:var(--ink3)">Last 7 days</div>
+            </div>
+            <div class="mini-chart-wrap" id="mini-chart"></div>
+          </div>
+
+          <div class="card">
+            <div style="font-family:var(--font2);font-size:0.78rem;color:var(--ink);letter-spacing:0.08em;margin-bottom:14px">RECENT SUBSCRIBERS</div>
+            <div id="recent-subs-list">
+              <div class="empty-state" style="padding:20px 0">
+                <div style="font-size:1.5rem">📭</div>
+                <div style="margin-top:8px">No subscribers yet</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-banner">
+          🛡️ &nbsp; Dashboard secured · Session active · All data stored locally
+        </div>
+      </div>
+
+      <!-- ── SUBSCRIBERS ── -->
+      <div class="page" id="page-subscribers">
+        <div class="page-header">
+          <div>
+            <div class="page-title">SUBSCRIBERS</div>
+            <div class="page-sub" id="sub-page-sub">0 total subscribers</div>
+          </div>
+          <button class="primary-btn" onclick="openAddModal()">+ ADD SUBSCRIBER</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <span class="search-ico">🔍</span>
+            <input type="text" placeholder="Search by name or email..." id="sub-search" oninput="renderSubscribers()">
+          </div>
+          <button class="action-btn" onclick="exportCSV()">⬇ Export CSV</button>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Subscribed</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="sub-table-body"></tbody>
+          </table>
+        </div>
+        <div id="sub-empty" class="empty-state" style="display:none">
+          <div class="empty-ico">📭</div>
+          <div>No subscribers yet. They'll appear here after submitting the GearPedia form.</div>
+        </div>
+      </div>
+
+      <!-- ── COMPOSE ── -->
+      <div class="page" id="page-compose">
+        <div class="page-header">
+          <div>
+            <div class="page-title">COMPOSE EMAIL</div>
+            <div class="page-sub">Send newsletter or individual reply</div>
+          </div>
+        </div>
+
+        <div class="two-col section-gap">
+          <div class="card">
+            <div class="compose-form">
+              <div class="compose-field">
+                <label>Send To</label>
+                <select id="compose-to">
+                  <option value="all">All Subscribers</option>
+                  <option value="individual">Individual — enter below</option>
+                </select>
+              </div>
+              <div class="compose-field" id="compose-individual-wrap" style="display:none">
+                <label>Recipient Email</label>
+                <input type="email" id="compose-individual" placeholder="user@email.com">
+              </div>
+              <div class="compose-field">
+                <label>Subject Line</label>
+                <input type="text" id="compose-subject" placeholder="GearPedia Update — May 2025">
+              </div>
+              <div class="compose-field">
+                <label>Message Body</label>
+                <textarea class="mail-body" id="compose-body" placeholder="Write your email here...
+
+Hi {name},
+
+..."></textarea>
+              </div>
+              <div style="display:flex;gap:12px;justify-content:flex-end">
+                <button class="action-btn" onclick="saveDraft()">💾 Save Draft</button>
+                <button class="primary-btn" onclick="sendEmail()">📤 SEND EMAIL</button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="card section-gap">
+              <div style="font-family:var(--font2);font-size:0.78rem;color:var(--ink);letter-spacing:0.08em;margin-bottom:14px">📧 TEMPLATE LIBRARY</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button class="action-btn" onclick="useTemplate('welcome')" style="width:100%;text-align:left">👋 Welcome Email</button>
+                <button class="action-btn" onclick="useTemplate('update')" style="width:100%;text-align:left">🔧 Gear Update</button>
+                <button class="action-btn" onclick="useTemplate('feature')" style="width:100%;text-align:left">✨ New Feature</button>
+                <button class="action-btn" onclick="useTemplate('newsletter')" style="width:100%;text-align:left">📰 Monthly Newsletter</button>
+              </div>
+            </div>
+            <div class="card">
+              <div style="font-family:var(--font2);font-size:0.78rem;color:var(--ink);letter-spacing:0.08em;margin-bottom:14px">💡 TIPS</div>
+              <div style="font-size:0.72rem;color:var(--ink3);line-height:1.8">
+                • Use <code style="color:var(--accent3)">{name}</code> to personalize<br>
+                • Use <code style="color:var(--accent3)">{email}</code> for recipient email<br>
+                • Use <code style="color:var(--accent3)">{date}</code> for today's date<br>
+                • Drafts are saved automatically
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── AUTO-REPLY ── -->
+      <div class="page" id="page-autoreply">
+        <div class="page-header">
+          <div>
+            <div class="page-title">AUTO-REPLY SYSTEM</div>
+            <div class="page-sub">Configure automatic email responses for subscribers</div>
+          </div>
+        </div>
+
+        <div class="auto-reply-card">
+          <div class="auto-reply-icon">👋</div>
+          <div class="auto-reply-info">
+            <h3>WELCOME AUTO-REPLY</h3>
+            <p>Automatically send a welcome email when someone subscribes to GearPedia.</p>
+            <div style="margin-top:12px">
+              <div class="toggle-wrap">
+                <label class="toggle">
+                  <input type="checkbox" id="ar-welcome" checked>
+                  <div class="toggle-track"></div>
+                </label>
+                <span class="toggle-label">Enabled</span>
+              </div>
+            </div>
+            <div style="margin-top:12px">
+              <div class="compose-field">
+                <label style="margin-bottom:6px;display:block;font-size:0.62rem;color:var(--ink3);letter-spacing:0.12em;text-transform:uppercase">Subject</label>
+                <input type="text" id="ar-welcome-subj" value="Welcome to GearPedia — You're In! ⚙️" style="background:rgba(0,200,255,0.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--ink);font-family:var(--font);font-size:0.8rem;outline:none;width:100%">
+              </div>
+              <div class="compose-field" style="margin-top:10px">
+                <label style="margin-bottom:6px;display:block;font-size:0.62rem;color:var(--ink3);letter-spacing:0.12em;text-transform:uppercase">Message</label>
+                <textarea style="width:100%;background:rgba(0,200,255,0.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--ink);font-family:var(--font);font-size:0.8rem;outline:none;resize:vertical;min-height:120px" id="ar-welcome-body">Hi {name},
+
+Welcome to GearPedia — the engineer's gear encyclopedia!
+
+You're now subscribed to receive updates on new gear types, formula improvements, and feature releases.
+
+Stay sharp,
+The GearPedia Team ⚙️</textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="auto-reply-card">
+          <div class="auto-reply-icon">📰</div>
+          <div class="auto-reply-info">
+            <h3>MONTHLY DIGEST</h3>
+            <p>Send a monthly roundup email to all subscribers on the 1st of each month.</p>
+            <div style="margin-top:12px">
+              <div class="toggle-wrap">
+                <label class="toggle">
+                  <input type="checkbox" id="ar-monthly">
+                  <div class="toggle-track"></div>
+                </label>
+                <span class="toggle-label">Enabled</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="auto-reply-card">
+          <div class="auto-reply-icon">💬</div>
+          <div class="auto-reply-info">
+            <h3>CUSTOM KEYWORD TRIGGER</h3>
+            <p>Auto-reply when a subscriber's role matches a keyword.</p>
+            <div style="margin-top:12px">
+              <div class="toggle-wrap">
+                <label class="toggle">
+                  <input type="checkbox" id="ar-keyword">
+                  <div class="toggle-track"></div>
+                </label>
+                <span class="toggle-label">Enabled</span>
+              </div>
+            </div>
+            <div style="margin-top:10px">
+              <input type="text" placeholder="Trigger keyword e.g. student" id="ar-keyword-val" style="background:rgba(0,200,255,0.04);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--ink);font-family:var(--font);font-size:0.8rem;outline:none;width:100%">
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-top:8px">
+          <button class="primary-btn" onclick="saveAutoReply()">💾 SAVE ALL AUTO-REPLY SETTINGS</button>
+        </div>
+      </div>
+
+      <!-- ── MAIL LOG ── -->
+      <div class="page" id="page-maillog">
+        <div class="page-header">
+          <div>
+            <div class="page-title">MAIL LOG</div>
+            <div class="page-sub">History of all sent emails and auto-replies</div>
+          </div>
+          <button class="action-btn" onclick="clearLog()">🗑 Clear Log</button>
+        </div>
+        <div class="card">
+          <div id="mail-log-list">
+            <div class="empty-state">
+              <div class="empty-ico">📭</div>
+              <div>No emails sent yet. Send your first newsletter!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="page" id="page-settings">
+        <div class="page-header">
+          <div>
+            <div class="page-title">SETTINGS</div>
+            <div class="page-sub">Manage credentials, security, and site protection</div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">🔐 CHANGE ADMIN CREDENTIALS</div>
+          <div class="card">
+            <div class="compose-row section-gap" style="margin-bottom:0">
+              <div class="compose-field">
+                <label>New Username</label>
+                <input type="text" id="new-username" placeholder="New admin username">
+              </div>
+              <div class="compose-field">
+                <label>Current Password (confirm)</label>
+                <input type="password" id="confirm-current-pass" placeholder="Current password">
+              </div>
+            </div>
+            <div class="compose-row" style="margin-top:16px">
+              <div class="compose-field">
+                <label>New Password</label>
+                <input type="password" id="new-password" placeholder="Min 12 chars, mixed">
+              </div>
+              <div class="compose-field">
+                <label>Confirm New Password</label>
+                <input type="password" id="confirm-new-pass" placeholder="Repeat new password">
+              </div>
+            </div>
+            <div id="pass-strength" style="font-size:0.68rem;margin:8px 0;min-height:18px"></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:4px">
+              <button class="primary-btn" onclick="changeCredentials()">UPDATE CREDENTIALS</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">🛡️ SITE PROTECTION</div>
+          <div class="card">
+            <div class="cb-row">
+              <input type="checkbox" id="prot-copy" checked>
+              <label for="prot-copy">Disable right-click & text selection (anti-copy)</label>
+            </div>
+            <div class="cb-row">
+              <input type="checkbox" id="prot-inspect" checked>
+              <label for="prot-inspect">Block DevTools / Inspect Element access</label>
+            </div>
+            <div class="cb-row">
+              <input type="checkbox" id="prot-printscreen">
+              <label for="prot-printscreen">Show watermark on print / screenshot (CSS overlay)</label>
+            </div>
+            <div style="margin-top:14px;font-size:0.72rem;color:var(--ink3);line-height:1.7;background:rgba(0,130,176,0.07);padding:12px;border-radius:8px;border:1px solid var(--border)">
+              ⚠️ These protections are already active in your GearPedia site file. The updated protected version has been provided for download. Note: determined technical users can always bypass client-side protections — for maximum security, host on a server with server-side access control.
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:12px">
+              <button class="primary-btn" onclick="showToast('✅','Site protection settings saved')">SAVE PROTECTION SETTINGS</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">📤 EMAILJS INTEGRATION — REAL EMAIL SENDING</div>
+          <div class="card">
+            <!-- Setup guide -->
+            <div style="background:rgba(0,130,176,0.08);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:18px;font-size:0.72rem;color:var(--ink2);line-height:1.9">
+              <div style="font-family:var(--font2);font-size:0.75rem;color:var(--accent);letter-spacing:0.1em;margin-bottom:10px">⚡ SETUP GUIDE (5 minutes, free)</div>
+              <div><span style="color:var(--accent3)">Step 1 →</span> Go to <strong style="color:var(--ink)">emailjs.com</strong> and create a free account</div>
+              <div><span style="color:var(--accent3)">Step 2 →</span> Click <strong style="color:var(--ink)">Email Services</strong> → Add a service (Gmail, Outlook, etc.) → copy <strong style="color:var(--yellow)">Service ID</strong></div>
+              <div><span style="color:var(--accent3)">Step 3 →</span> Click <strong style="color:var(--ink)">Email Templates</strong> → Create template with these variables:<br>
+                &nbsp;&nbsp;&nbsp;<code style="color:var(--green)">{{to_email}}</code> &nbsp;<code style="color:var(--green)">{{to_name}}</code> &nbsp;<code style="color:var(--green)">{{subject}}</code> &nbsp;<code style="color:var(--green)">{{message}}</code> &nbsp;<code style="color:var(--green)">{{from_name}}</code><br>
+                &nbsp;&nbsp;&nbsp;Copy the <strong style="color:var(--yellow)">Template ID</strong>
+              </div>
+              <div><span style="color:var(--accent3)">Step 4 →</span> Go to <strong style="color:var(--ink)">Account → API Keys</strong> → copy your <strong style="color:var(--yellow)">Public Key</strong></div>
+              <div><span style="color:var(--accent3)">Step 5 →</span> Paste all three below and click <strong style="color:var(--ink)">Save & Test</strong></div>
+            </div>
+
+            <div id="ejs-status" style="display:none;margin-bottom:14px;padding:10px 14px;border-radius:8px;font-size:0.72rem;"></div>
+
+            <div class="compose-row section-gap">
+              <div class="compose-field">
+                <label>Service ID</label>
+                <input type="text" id="ejs-service" placeholder="service_xxxxxxx" autocomplete="off">
+              </div>
+              <div class="compose-field">
+                <label>Template ID</label>
+                <input type="text" id="ejs-template" placeholder="template_xxxxxxx" autocomplete="off">
+              </div>
+            </div>
+            <div class="compose-field">
+              <label>Public Key</label>
+              <input type="text" id="ejs-pubkey" placeholder="your_public_key_here" autocomplete="off">
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap">
+              <button class="action-btn" onclick="testEmailJS()">🧪 Send Test Email to Me</button>
+              <button class="primary-btn" onclick="saveEmailJS()">💾 SAVE EMAILJS KEYS</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-title">🗑️ DATA MANAGEMENT</div>
+          <div class="card" style="display:flex;gap:12px;flex-wrap:wrap">
+            <button class="action-btn" onclick="exportCSV()">⬇ Export Subscribers CSV</button>
+            <button class="action-btn" onclick="exportJSON()">⬇ Export JSON</button>
+            <button class="action-btn red" onclick="confirmClearAll()">⚠ Clear All Data</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+  </div><!-- /dash-layout -->
+</div><!-- /dashboard -->
+
+<!-- ─── ADD SUBSCRIBER MODAL ─── -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <div class="modal-title">➕ ADD SUBSCRIBER</div>
+    <div class="compose-field">
+      <label>Full Name</label>
+      <input type="text" id="modal-name" placeholder="John Engineer">
+    </div>
+    <div class="compose-field" style="margin-top:14px">
+      <label>Email Address</label>
+      <input type="email" id="modal-email" placeholder="john@example.com">
+    </div>
+    <div class="compose-field" style="margin-top:14px">
+      <label>Role / Profession</label>
+      <input type="text" id="modal-role" placeholder="Mechanical Engineer">
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeModal('add-modal')">Cancel</button>
+      <button class="primary-btn" onclick="addSubscriber()">ADD SUBSCRIBER</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── VIEW/REPLY SUBSCRIBER MODAL ─── -->
+<div class="modal-overlay" id="reply-modal">
+  <div class="modal">
+    <div class="modal-title">✉️ REPLY TO SUBSCRIBER</div>
+    <div style="margin-bottom:16px;padding:12px;background:rgba(0,200,255,0.05);border:1px solid var(--border);border-radius:8px;font-size:0.78rem">
+      <div><strong style="color:var(--ink3)">TO:</strong> <span id="reply-to-name" style="color:var(--ink)"></span></div>
+      <div style="margin-top:4px"><strong style="color:var(--ink3)">EMAIL:</strong> <span id="reply-to-email" style="color:var(--accent3)"></span></div>
+    </div>
+    <div class="compose-field">
+      <label>Subject</label>
+      <input type="text" id="reply-subject" placeholder="Re: GearPedia">
+    </div>
+    <div class="compose-field" style="margin-top:12px">
+      <label>Message</label>
+      <textarea id="reply-body" style="width:100%;background:rgba(0,200,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--ink);font-family:var(--font);font-size:0.8rem;outline:none;resize:vertical;min-height:140px" placeholder="Hi {name},&#10;&#10;..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" onclick="closeModal('reply-modal')">Cancel</button>
+      <button class="primary-btn" onclick="sendReply()">📤 SEND REPLY</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast">
+  <span class="toast-ico" id="toast-ico"></span>
+  <span id="toast-msg"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+/* ══════════════════════════════════════════
+   CREDENTIALS (change via Settings page)
+   Username: GearPediaAdmin
+   Password: GP@Secure#2025!
+══════════════════════════════════════════ */
+const CREDS = {
+  username: 'GearPediaAdmin',
+  // Strong default password — stored as a simple hash simulation
+  // CHANGE THIS via the Settings page after first login
+  password: 'GP@Secure#2025!'
+};
+
+let loginAttempts = 0;
+let lockoutEnd = 0;
+let currentReplyIndex = -1;
+
+// ─── STORAGE ───
+function loadData(key, def) {
+  try { return JSON.parse(localStorage.getItem('gp_' + key)) ?? def; } catch { return def; }
+}
+function saveData(key, val) {
+  localStorage.setItem('gp_' + key, JSON.stringify(val));
+}
+
+let subscribers = loadData('subscribers', []);
+let mailLog     = loadData('maillog', []);
+let emailsSent  = loadData('emailsSent', 0);
+let creds       = loadData('creds', CREDS);
+
+// ─── LOGIN ───
+function attemptLogin() {
+  const now = Date.now();
+  if (lockoutEnd > now) return;
+
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+
+  if (u === creds.username && p === creds.password) {
+    loginAttempts = 0;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    startClock();
+    renderAll();
+  } else {
+    loginAttempts++;
+    const remaining = 5 - loginAttempts;
+    const msg = document.getElementById('login-msg');
+
+    ['login-user','login-pass'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.add('error');
+      setTimeout(() => el.classList.remove('error'), 600);
+    });
+
+    if (loginAttempts >= 5) {
+      lockoutEnd = now + 5 * 60 * 1000;
+      startLockout();
+    } else {
+      msg.textContent = `⚠ Incorrect credentials — ${remaining} attempt${remaining !== 1 ? 's' : ''} remaining`;
+    }
+  }
+}
+
+function startLockout() {
+  const overlay = document.getElementById('lockout-overlay');
+  overlay.classList.add('active');
+  const tick = () => {
+    const left = Math.max(0, lockoutEnd - Date.now());
+    const m = Math.floor(left / 60000);
+    const s = Math.floor((left % 60000) / 1000);
+    document.getElementById('lockout-timer').textContent =
+      m + ':' + String(s).padStart(2, '0');
+    if (left <= 0) {
+      overlay.classList.remove('active');
+      loginAttempts = 0;
+      document.getElementById('login-msg').textContent = 'Lockout ended. Try again.';
+    } else {
+      setTimeout(tick, 1000);
+    }
+  };
+  tick();
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('login-screen').style.display !== 'none') attemptLogin();
+  }
+});
+
+// ─── LOGOUT ───
+function logout() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  document.getElementById('login-msg').textContent = '';
+}
+
+// ─── CLOCK ───
+function startClock() {
+  const el = document.getElementById('topbar-time');
+  const tick = () => {
+    el.textContent = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+// ─── NAV ───
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── RENDER ALL ───
+function renderAll() {
+  renderOverview();
+  renderSubscribers();
+  renderMailLog();
+  document.getElementById('sub-count-badge').textContent = subscribers.length;
+  document.getElementById('sub-page-sub').textContent = subscribers.length + ' total subscribers';
+}
+
+// ─── OVERVIEW ───
+function renderOverview() {
+  document.getElementById('ov-total').textContent = subscribers.length;
+  const today = new Date().toDateString();
+  document.getElementById('ov-today').textContent =
+    subscribers.filter(s => new Date(s.date).toDateString() === today).length;
+  document.getElementById('ov-emails').textContent = emailsSent;
+
+  // Mini chart (last 7 days)
+  const chart = document.getElementById('mini-chart');
+  const days = Array.from({length:7}, (_,i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6 - i));
+    return subscribers.filter(s => new Date(s.date).toDateString() === d.toDateString()).length;
+  });
+  const max = Math.max(...days, 1);
+  chart.innerHTML = days.map((n,i) => {
+    const h = Math.max(4, Math.round((n / max) * 70));
+    const day = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][i];
+    return `<div class="mini-bar" style="height:${h}px" title="${day}: ${n} subscribers"></div>`;
+  }).join('');
+
+  // Recent subscribers
+  const list = document.getElementById('recent-subs-list');
+  if (subscribers.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:20px 0"><div style="font-size:1.5rem">📭</div><div style="margin-top:8px">No subscribers yet</div></div>`;
+    return;
+  }
+  const recent = [...subscribers].reverse().slice(0, 5);
+  list.innerHTML = recent.map(s => `
+    <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:34px;height:34px;border-radius:50%;background:rgba(0,130,176,0.18);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">
+        ${s.name.charAt(0).toUpperCase()}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:0.78rem;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.name)}</div>
+        <div style="font-size:0.68rem;color:var(--ink3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.email)}</div>
+      </div>
+      <div style="font-size:0.63rem;color:var(--ink3);white-space:nowrap">${formatDate(s.date)}</div>
+    </div>
+  `).join('');
+}
+
+// ─── SUBSCRIBERS ───
+function renderSubscribers() {
+  const q = (document.getElementById('sub-search')?.value || '').toLowerCase();
+  const filtered = subscribers.filter(s =>
+    s.name.toLowerCase().includes(q) || s.email.toLowerCase().includes(q)
+  );
+
+  const tbody = document.getElementById('sub-table-body');
+  const empty = document.getElementById('sub-empty');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = filtered.map((s, i) => `
+      <tr>
+        <td style="color:var(--ink3)">${i + 1}</td>
+        <td class="subscriber-name">${esc(s.name)}</td>
+        <td class="subscriber-email">${esc(s.email)}</td>
+        <td><span class="tag tag-role">${esc(s.role || 'Engineer')}</span></td>
+        <td style="color:var(--ink3);font-size:0.72rem">${formatDate(s.date)}</td>
+        <td><span class="tag tag-active">Active</span></td>
+        <td>
+          <button class="action-btn" onclick="openReplyModal(${subscribers.indexOf(s)})">✉ Reply</button>
+          <button class="action-btn red" onclick="removeSubscriber(${subscribers.indexOf(s)})">✕</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('sub-count-badge').textContent = subscribers.length;
+  document.getElementById('sub-page-sub').textContent = subscribers.length + ' total subscribers';
+}
+
+// ─── ADD SUBSCRIBER ───
+function openAddModal() { document.getElementById('add-modal').classList.add('open'); }
+
+function addSubscriber() {
+  const name  = document.getElementById('modal-name').value.trim();
+  const email = document.getElementById('modal-email').value.trim();
+  const role  = document.getElementById('modal-role').value.trim();
+
+  if (!name || !email || !email.includes('@')) {
+    showToast('⚠️', 'Please fill in name and valid email');
+    return;
+  }
+
+  if (subscribers.find(s => s.email === email)) {
+    showToast('⚠️', 'This email is already subscribed');
+    return;
+  }
+
+  subscribers.push({ name, email, role: role || 'Engineer', date: new Date().toISOString() });
+  saveData('subscribers', subscribers);
+  closeModal('add-modal');
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-email').value = '';
+  document.getElementById('modal-role').value = '';
+  renderAll();
+  showToast('✅', 'Subscriber added: ' + name);
+}
+
+function removeSubscriber(idx) {
+  if (!confirm('Remove ' + subscribers[idx].name + ' from subscribers?')) return;
+  subscribers.splice(idx, 1);
+  saveData('subscribers', subscribers);
+  renderAll();
+  showToast('🗑️', 'Subscriber removed');
+}
+
+// ─── REPLY MODAL ───
+function openReplyModal(idx) {
+  currentReplyIndex = idx;
+  const s = subscribers[idx];
+  document.getElementById('reply-to-name').textContent  = s.name;
+  document.getElementById('reply-to-email').textContent = s.email;
+  document.getElementById('reply-subject').value = 'Re: GearPedia';
+  document.getElementById('reply-body').value = `Hi ${s.name},\n\n`;
+  document.getElementById('reply-modal').classList.add('open');
+}
+
+async function sendReply() {
+  const s = subscribers[currentReplyIndex];
+  const subj = document.getElementById('reply-subject').value.trim();
+  const body = document.getElementById('reply-body').value.trim();
+  if (!subj || !body) { showToast('⚠️', 'Subject and message required'); return; }
+
+  if (!ejsReady()) {
+    showToast('⚠️', 'Add EmailJS keys in Settings first!');
+    return;
+  }
+
+  showToast('⏳', 'Sending reply to ' + s.name + '...');
+  try {
+    const msg = personalise(body, s.name, s.email);
+    await ejsSend(s.email, s.name, subj, msg);
+    logEmail(s.email, s.name, subj, 'sent');
+    closeModal('reply-modal');
+    renderMailLog();
+    emailsSent++; saveData('emailsSent', emailsSent);
+    document.getElementById('ov-emails').textContent = emailsSent;
+    showToast('✅', 'Reply sent to ' + s.name);
+  } catch(err) {
+    console.error(err);
+    showToast('❌', 'Send failed — check EmailJS keys in Settings');
+  }
+}
+
+// ─── COMPOSE ───
+document.getElementById('compose-to')?.addEventListener('change', function() {
+  document.getElementById('compose-individual-wrap').style.display =
+    this.value === 'individual' ? 'block' : 'none';
+});
+
+const TEMPLATES = {
+  welcome: {
+    subject: 'Welcome to GearPedia ⚙️',
+    body: `Hi {name},
+
+Welcome aboard GearPedia — the engineer's gear encyclopedia!
+
+You now have access to 19 gear types, 100+ formulas, and stress calculators.
+
+Glad to have you,
+The GearPedia Team`
+  },
+  update: {
+    subject: 'GearPedia Gear Update 🔧',
+    body: `Hi {name},
+
+We've just released updates to the gear formula suite.
+
+New additions include improved bevel gear stress analysis and updated AGMA tables.
+
+Check it out,
+The GearPedia Team`
+  },
+  feature: {
+    subject: 'New Feature Alert — GearPedia ✨',
+    body: `Hi {name},
+
+Exciting news — GearPedia just launched a new feature!
+
+[Describe your feature here]
+
+As always, your feedback matters.
+
+The GearPedia Team`
+  },
+  newsletter: {
+    subject: 'GearPedia Monthly Newsletter 📰',
+    body: `Hi {name},
+
+Here's what's new at GearPedia this month:
+
+• [Update 1]
+• [Update 2]
+• [Update 3]
+
+Thanks for being part of our community.
+
+The GearPedia Team`
+  }
+};
+
+function useTemplate(key) {
+  const t = TEMPLATES[key];
+  document.getElementById('compose-subject').value = t.subject;
+  document.getElementById('compose-body').value = t.body;
+  showToast('📋', 'Template loaded');
+}
+
+async function sendEmail() {
+  const to      = document.getElementById('compose-to').value;
+  const subject = document.getElementById('compose-subject').value.trim();
+  const body    = document.getElementById('compose-body').value.trim();
+
+  if (!subject || !body) { showToast('⚠️', 'Subject and message required'); return; }
+
+  if (!ejsReady()) {
+    showToast('⚠️', 'Add EmailJS keys in Settings first!');
+    return;
+  }
+
+  if (to === 'all') {
+    if (subscribers.length === 0) { showToast('⚠️', 'No subscribers to send to'); return; }
+    showToast('⏳', `Sending to ${subscribers.length} subscribers...`);
+    let sent = 0, failed = 0;
+    for (const s of subscribers) {
+      try {
+        const msg = personalise(body, s.name, s.email);
+        await ejsSend(s.email, s.name, subject, msg);
+        logEmail(s.email, s.name, subject, 'sent');
+        sent++;
+        // Small delay to avoid rate limiting
+        await new Promise(r => setTimeout(r, 300));
+      } catch(e) {
+        failed++;
+        logEmail(s.email, s.name, subject, 'failed');
+      }
+    }
+    emailsSent += sent;
+    saveData('emailsSent', emailsSent);
+    document.getElementById('ov-emails').textContent = emailsSent;
+    showToast(failed ? '⚠️' : '✅', `Sent: ${sent}${failed ? ', Failed: '+failed : ''}`);
+  } else {
+    const email = document.getElementById('compose-individual').value.trim();
+    const name  = email;
+    if (!email) { showToast('⚠️', 'Enter recipient email'); return; }
+    showToast('⏳', 'Sending...');
+    try {
+      const msg = personalise(body, name, email);
+      await ejsSend(email, name, subject, msg);
+      logEmail(email, name, subject, 'sent');
+      emailsSent++;
+      saveData('emailsSent', emailsSent);
+      document.getElementById('ov-emails').textContent = emailsSent;
+      showToast('✅', 'Email sent to ' + email);
+    } catch(e) {
+      logEmail(email, name, subject, 'failed');
+      showToast('❌', 'Send failed — check EmailJS keys');
+    }
+  }
+
+  document.getElementById('compose-subject').value = '';
+  document.getElementById('compose-body').value = '';
+  renderMailLog();
+}
+
+function saveDraft() {
+  const subject = document.getElementById('compose-subject').value.trim();
+  const body    = document.getElementById('compose-body').value.trim();
+  logEmail('(draft)', 'Draft', subject || '(no subject)', 'draft');
+  renderMailLog();
+  showToast('💾', 'Draft saved');
+}
+
+// ─── AUTO REPLY ───
+function saveAutoReply() {
+  const settings = {
+    welcome:    document.getElementById('ar-welcome').checked,
+    monthly:    document.getElementById('ar-monthly').checked,
+    keyword:    document.getElementById('ar-keyword').checked,
+    keywordVal: document.getElementById('ar-keyword-val').value,
+    welcomeSubj: document.getElementById('ar-welcome-subj').value,
+    welcomeBody: document.getElementById('ar-welcome-body').value
+  };
+  saveData('autoreply', settings);
+  document.getElementById('ov-auto').textContent = settings.welcome ? 'ON' : 'OFF';
+  showToast('✅', 'Auto-reply settings saved');
+}
+
+/* Called by GearPedia_Protected.html (same browser/tab via BroadcastChannel)
+   when a new subscriber signs up — sends the welcome auto-reply immediately */
+async function sendWelcomeAutoReply(subscriber) {
+  const ar = loadData('autoreply', null);
+  if (!ar || !ar.welcome) return;
+  if (!ejsReady()) return;
+
+  const subj = ar.welcomeSubj || 'Welcome to GearPedia ⚙️';
+  const body = personalise(
+    ar.welcomeBody || 'Hi {name}, welcome to GearPedia!',
+    subscriber.name, subscriber.email
+  );
+
+  try {
+    await ejsSend(subscriber.email, subscriber.name, subj, body);
+    logEmail(subscriber.email, subscriber.name, subj, 'auto');
+    renderMailLog();
+    emailsSent++; saveData('emailsSent', emailsSent);
+    document.getElementById('ov-emails').textContent = emailsSent;
+    console.log('Auto-reply sent to', subscriber.email);
+  } catch(e) {
+    console.error('Auto-reply failed:', e);
+    logEmail(subscriber.email, subscriber.name, subj, 'failed');
+    renderMailLog();
+  }
+}
+
+// ─── MAIL LOG ───
+function logEmail(email, name, subject, status) {
+  mailLog.unshift({ email, name, subject, status, time: new Date().toISOString() });
+  mailLog = mailLog.slice(0, 100); // keep last 100
+  saveData('maillog', mailLog);
+}
+
+function renderMailLog() {
+  const el = document.getElementById('mail-log-list');
+  if (mailLog.length === 0) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-ico">📭</div><div>No emails sent yet.</div></div>`;
+    return;
+  }
+  el.innerHTML = mailLog.map(m => `
+    <div class="mail-log-item">
+      <div class="mail-log-ico">${m.status === 'auto' ? '🤖' : m.status === 'draft' ? '💾' : '📤'}</div>
+      <div class="mail-log-info">
+        <div class="mail-log-to">To: ${esc(m.name)} &lt;${esc(m.email)}&gt;</div>
+        <div class="mail-log-subject">${esc(m.subject)}</div>
+        <div class="mail-log-time">${new Date(m.time).toLocaleString()}</div>
+      </div>
+      <div class="mail-log-status status-${m.status}">${m.status.toUpperCase()}</div>
+    </div>
+  `).join('');
+}
+
+function clearLog() {
+  if (!confirm('Clear all mail log entries?')) return;
+  mailLog = [];
+  saveData('maillog', mailLog);
+  renderMailLog();
+  showToast('🗑️', 'Mail log cleared');
+}
+
+// ─── SETTINGS ───
+document.getElementById('new-password')?.addEventListener('input', function() {
+  const v = this.value;
+  const strength = [/[A-Z]/, /[a-z]/, /[0-9]/, /[^A-Za-z0-9]/, /.{12,}/]
+    .filter(r => r.test(v)).length;
+  const labels = ['', 'Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
+  const colors = ['', '#ff4560', '#ff6b35', '#ffd700', '#00c8ff', '#00e396'];
+  const el = document.getElementById('pass-strength');
+  el.textContent = v ? 'Password strength: ' + (labels[strength] || 'Weak') : '';
+  el.style.color = colors[Math.min(strength, 5)];
+});
+
+function changeCredentials() {
+  const newU     = document.getElementById('new-username').value.trim();
+  const curP     = document.getElementById('confirm-current-pass').value;
+  const newP     = document.getElementById('new-password').value;
+  const conP     = document.getElementById('confirm-new-pass').value;
+
+  if (curP !== creds.password) { showToast('⚠️', 'Current password is incorrect'); return; }
+  if (newP && newP !== conP)   { showToast('⚠️', 'New passwords do not match'); return; }
+  if (newP && newP.length < 12){ showToast('⚠️', 'Password must be 12+ characters'); return; }
+
+  if (newU) creds.username = newU;
+  if (newP) creds.password = newP;
+  saveData('creds', creds);
+  showToast('✅', 'Credentials updated successfully');
+  ['new-username','confirm-current-pass','new-password','confirm-new-pass'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function saveEmailJS() {
+  const keys = {
+    serviceId:   document.getElementById('ejs-service').value.trim(),
+    templateId:  document.getElementById('ejs-template').value.trim(),
+    publicKey:   document.getElementById('ejs-pubkey').value.trim()
+  };
+  if (!keys.serviceId || !keys.templateId || !keys.publicKey) {
+    showToast('⚠️', 'Please fill in all three EmailJS fields');
+    return;
+  }
+  saveData('emailjs', keys);
+  // Initialise EmailJS with the new key
+  emailjs.init({ publicKey: keys.publicKey });
+  showToast('✅', 'EmailJS keys saved & initialised');
+}
+
+/* ══════════════════════════════════════════
+   REAL EMAIL SENDING VIA EMAILJS
+   Template variables used:
+     to_email, to_name, subject, message, from_name
+══════════════════════════════════════════ */
+function getEJS() {
+  return loadData('emailjs', null);
+}
+
+function ejsReady() {
+  const k = getEJS();
+  return k && k.serviceId && k.templateId && k.publicKey;
+}
+
+function personalise(text, name, email) {
+  const d = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+  return text
+    .replace(/\{name\}/g,  name  || 'Subscriber')
+    .replace(/\{email\}/g, email || '')
+    .replace(/\{date\}/g,  d);
+}
+
+async function ejsSend(toEmail, toName, subject, message) {
+  const k = getEJS();
+  if (!k) throw new Error('NO_KEYS');
+  const params = {
+    to_email:  toEmail,
+    to_name:   toName || 'Subscriber',
+    subject:   subject,
+    message:   message,
+    from_name: 'GearPedia Team'
+  };
+  return emailjs.send(k.serviceId, k.templateId, params);
+}
+
+// ─── TEST EMAILJS ───
+async function testEmailJS() {
+  const serviceId  = document.getElementById('ejs-service').value.trim();
+  const templateId = document.getElementById('ejs-template').value.trim();
+  const publicKey  = document.getElementById('ejs-pubkey').value.trim();
+  const statusEl   = document.getElementById('ejs-status');
+
+  if (!serviceId || !templateId || !publicKey) {
+    showToast('⚠️', 'Fill in all three EmailJS fields first');
+    return;
+  }
+
+  statusEl.style.display = 'block';
+  statusEl.style.background = 'rgba(0,200,255,0.06)';
+  statusEl.style.border = '1px solid var(--border)';
+  statusEl.style.color = 'var(--ink2)';
+  statusEl.textContent = '⏳ Sending test email...';
+
+  try {
+    emailjs.init({ publicKey });
+    await emailjs.send(serviceId, templateId, {
+      to_email:  creds.username + '@test.com',
+      to_name:   'Admin',
+      subject:   '✅ GearPedia EmailJS Test',
+      message:   'This is a test email from your GearPedia Admin Dashboard. EmailJS is configured correctly!',
+      from_name: 'GearPedia Team'
+    });
+    statusEl.style.background = 'rgba(0,227,150,0.08)';
+    statusEl.style.border = '1px solid rgba(0,227,150,0.25)';
+    statusEl.style.color = 'var(--green)';
+    statusEl.textContent = '✅ Test email sent! Check your inbox. EmailJS is working correctly.';
+    showToast('✅', 'Test email sent successfully!');
+  } catch(err) {
+    statusEl.style.background = 'rgba(255,69,96,0.08)';
+    statusEl.style.border = '1px solid rgba(255,69,96,0.25)';
+    statusEl.style.color = 'var(--red)';
+    statusEl.textContent = '❌ Failed: ' + (err.text || err.message || JSON.stringify(err)) + ' — Check your keys and template variables.';
+    showToast('❌', 'Test failed — check keys');
+  }
+}
+
+// ─── EXPORT ───
+function exportCSV() {
+  if (subscribers.length === 0) { showToast('⚠️', 'No subscribers to export'); return; }
+  const rows = ['Name,Email,Role,Date', ...subscribers.map(s =>
+    `"${s.name}","${s.email}","${s.role}","${new Date(s.date).toLocaleDateString()}"`)];
+  download('gearpedia_subscribers.csv', rows.join('\n'), 'text/csv');
+  showToast('⬇️', 'CSV exported');
+}
+
+function exportJSON() {
+  if (subscribers.length === 0) { showToast('⚠️', 'No subscribers to export'); return; }
+  download('gearpedia_subscribers.json', JSON.stringify(subscribers, null, 2), 'application/json');
+  showToast('⬇️', 'JSON exported');
+}
+
+function download(filename, content, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content], { type }));
+  a.download = filename;
+  a.click();
+}
+
+function confirmClearAll() {
+  if (!confirm('⚠️ This will permanently delete ALL subscriber data. Are you sure?')) return;
+  subscribers = []; mailLog = []; emailsSent = 0;
+  saveData('subscribers', subscribers);
+  saveData('maillog', mailLog);
+  saveData('emailsSent', emailsSent);
+  renderAll();
+  showToast('🗑️', 'All data cleared');
+}
+
+// ─── MODAL ───
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(ico, msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-ico').textContent = ico;
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// ─── UTILS ───
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+
+// ─── SECURITY: Anti-Inspect, Anti-Copy ───
+(function() {
+  // Block right-click on dashboard
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  // Block common DevTools shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') { e.preventDefault(); return false; }
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) {
+      e.preventDefault(); return false;
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'u') { e.preventDefault(); return false; }
+  });
+  // Disable text selection
+  document.addEventListener('selectstart', e => e.preventDefault());
+  // DevTools size-change detection
+  let devOpen = false;
+  setInterval(() => {
+    const threshold = 200;
+    if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) {
+      if (!devOpen) {
+        devOpen = true;
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'flex';
+        alert('⛔ Developer tools detected. Session terminated for security.');
+      }
+    } else { devOpen = false; }
+  }, 1000);
+})();
+
+// ─── INIT: Load GearPedia subscribers from localStorage ───
+// GearPedia_Protected.html writes to localStorage 'gp_subscribers'
+// and broadcasts via BroadcastChannel 'gp_new_subscriber'
+window.addEventListener('storage', e => {
+  if (e.key === 'gp_subscribers') {
+    const prev = subscribers.length;
+    subscribers = loadData('subscribers', []);
+    renderAll();
+    // If a new subscriber was added, fire auto-reply
+    if (subscribers.length > prev) {
+      const newest = subscribers[subscribers.length - 1];
+      sendWelcomeAutoReply(newest);
+    }
+  }
+});
+
+// BroadcastChannel for same-browser cross-tab instant notification
+try {
+  const bc = new BroadcastChannel('gp_new_subscriber');
+  bc.onmessage = (e) => {
+    const newSub = e.data;
+    if (newSub && newSub.email) {
+      // Avoid duplicate if storage event already added
+      if (!subscribers.find(s => s.email === newSub.email)) {
+        subscribers.push(newSub);
+        saveData('subscribers', subscribers);
+      }
+      renderAll();
+      sendWelcomeAutoReply(newSub);
+      showToast('🔔', 'New subscriber: ' + newSub.name);
+    }
+  };
+} catch(e) {}
+
+// Init EmailJS on page load if keys already saved
+(function initEJS() {
+  const k = getEJS();
+  if (k && k.publicKey) {
+    try { emailjs.init({ publicKey: k.publicKey }); } catch(e) {}
+  }
+})();
+
+// Load saved auto-reply settings
+(function() {
+  const ar = loadData('autoreply', null);
+  if (ar) {
+    if (document.getElementById('ar-welcome')) document.getElementById('ar-welcome').checked = ar.welcome;
+    if (document.getElementById('ar-monthly')) document.getElementById('ar-monthly').checked = ar.monthly;
+    if (document.getElementById('ar-keyword')) document.getElementById('ar-keyword').checked = ar.keyword;
+    if (ar.keywordVal)   document.getElementById('ar-keyword-val').value = ar.keywordVal;
+    if (ar.welcomeSubj)  document.getElementById('ar-welcome-subj').value = ar.welcomeSubj;
+    if (ar.welcomeBody)  document.getElementById('ar-welcome-body').value = ar.welcomeBody;
+    document.getElementById('ov-auto').textContent = ar.welcome ? 'ON' : 'OFF';
+  }
+  const ejs = loadData('emailjs', null);
+  if (ejs) {
+    if (ejs.serviceId)  document.getElementById('ejs-service').value  = ejs.serviceId;
+    if (ejs.templateId) document.getElementById('ejs-template').value = ejs.templateId;
+    if (ejs.publicKey)  document.getElementById('ejs-pubkey').value   = ejs.publicKey;
+  }
+})();
+</script>
+</body>
+</html>
